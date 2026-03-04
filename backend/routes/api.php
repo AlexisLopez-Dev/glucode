@@ -11,6 +11,6 @@ Route::get('/user', function (Request $request) {
 Route::get('/ping', function () {
     return response()->json([
         'status' => 'ok',
-        'message' => '¡Hola desde el Backend de Glucode!'
+        'message' => '¡Hola desde el Backend de Glucode! (Ahora, con auto-deploy funcionando)'
     ]);
 });
