@@ -5,7 +5,7 @@ function App() {
 
   const hacerPing = async () => {
     try {
-      const response = await fetch('http://backend.test/api/ping')
+      const response = await fetch('https://glucode-backend.alexislopez.iesf3.es/api/ping')
       const data = await response.json()
       setMensaje(data.message)
     } catch (error) {
