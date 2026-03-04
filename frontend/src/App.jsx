@@ -1,11 +1,12 @@
 import { useState } from 'react'
+import { API_BASE_URL } from './config';
 
 function App() {
   const [mensaje, setMensaje] = useState('Esperando conexión con el backend...')
 
   const hacerPing = async () => {
     try {
-      const response = await fetch('https://glucode-backend.alexislopez.iesf3.es/api/ping')
+      const response = await fetch(`${API_BASE_URL}/ping`);
       const data = await response.json()
       setMensaje(data.message)
     } catch (error) {
