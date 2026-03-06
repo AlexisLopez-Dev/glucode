@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MedicalSettingController;
 
 
 Route::get('/ping', function () {
@@ -26,5 +27,8 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    Route::get('/medical-settings', [MedicalSettingController::class, 'show']);
+    Route::post('/medical-settings', [MedicalSettingController::class, 'store']);
 
 });
