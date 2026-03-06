@@ -5,12 +5,17 @@ namespace App\Models;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable {
     public function medicalSetting(): HasOne {
         return $this->hasOne(MedicalSetting::class);
+    }
+
+    public function simulations(): HasMany {
+        return $this->hasMany(Simulation::class);
     }
 
     /** @use HasFactory<\Database\Factories\UserFactory> */
