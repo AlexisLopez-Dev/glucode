@@ -1,9 +1,12 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from '../lib/axios';
+import { AuthContext } from '../context/AuthContext';
 
 export default function Login() {
+
+    const { login } = useContext(AuthContext);
 
     const [serverError, setServerError] = useState('');
     const navigate = useNavigate();
@@ -13,16 +16,16 @@ export default function Login() {
     const onSubmit = async (data) => {
         setServerError('');
         try {
-        const response = await axios.post('/login', data);
-        
-        const token = response.data.access_token;
-        localStorage.setItem('auth_token', token);
-        
-        navigate('/dashboard'); 
-        
+            const response = await axios.post('/login', data);
+            const token = response.data.access_token;
+            
+            await login(token);
+            
+            navigate('/dashboard');
+                        
         } catch (err) {
-        console.error(err);
-        setServerError('Credenciales incorrectas o error de conexión');
+            console.error(err);
+            setServerError('Credenciales incorrectas o error de conexión');
         }
     };
 

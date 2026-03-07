@@ -30,9 +30,17 @@ export const AuthProvider = ({ children }) => {
     checkAuth();
   }, []);
 
-  const login = (token) => {
+  const login = async (token) => {
     localStorage.setItem('auth_token', token);
-    setIsAuthenticated(true);
+    
+    try {
+      const response = await axios.get('/user');
+      setUser(response.data);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error("Error al obtener los datos del usuario tras el login: " + error);
+      localStorage.removeItem('auth_token');
+    }
   };
 
   const logout = async () => {
