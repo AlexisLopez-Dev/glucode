@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from '../lib/axios';
 import { AuthContext } from '../context/AuthContext';
@@ -22,7 +22,7 @@ export default function Login() {
             await login(token);
             
             navigate('/dashboard');
-                        
+
         } catch (err) {
             console.error(err);
             setServerError('Credenciales incorrectas o error de conexión');
@@ -45,6 +45,7 @@ export default function Login() {
             <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               type="email"
+              autoComplete="username"
               className={`mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="alexis@glucode.com"
                 {...register('email', { 
@@ -59,6 +60,7 @@ export default function Login() {
             <label className="block text-sm font-medium text-gray-700">Contraseña</label>
             <input
               type="password"
+              autoComplete="current-password"
               className={`mt-1 block w-full px-4 py-2 border rounded-lg focus:ring-blue-500 focus:border-blue-500 ${errors.password ? 'border-red-500' : 'border-gray-300'}`}
               placeholder="••••••••"
                 {...register('password', { 
@@ -77,6 +79,14 @@ export default function Login() {
           >
             {isSubmitting ? 'Iniciando sesión...' : 'Entrar'}
           </button>
+
+           <p className="mt-6 text-center text-sm text-gray-600">
+                ¿No tienes cuenta?{' '}
+                <Link to="/register" className="text-blue-600 hover:underline font-medium">
+                    Regístrate aquí
+                </Link>
+            </p> 
+
         </form>
       </div>
     </div>

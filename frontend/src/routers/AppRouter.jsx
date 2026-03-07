@@ -3,6 +3,7 @@ import { useContext } from 'react';
 import { AuthContext } from '../context/AuthContext';
 import Login from '../pages/Login';
 import { Dashboard } from '../pages/Dashboard';
+import Register from '../pages/Register';
 
 export const AppRouter = () => {
     
@@ -19,6 +20,11 @@ export const AppRouter = () => {
         <Route 
           path="/login" 
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
+        />
+
+        <Route 
+          path="/register" 
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />} 
         />
         
         <Route 
