@@ -10,11 +10,23 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller {
     public function register(Request $request) {
-        $validado = $request->validate([
+
+        $reglas = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
-        ]);
+        ];
+
+        $mensajes = [
+            'email.unique' => 'Este correo electrónico ya está registrado.',
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El formato del correo no es válido.',
+            'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
+            'password.confirmed' => 'Las contraseñas no coinciden.',
+            'name.required' => 'El nombre es obligatorio.'
+        ];
+
+        $validado = $request->validate($reglas, $mensajes);
 
         $user = User::create($validado);
 
@@ -28,10 +40,19 @@ class AuthController extends Controller {
     }
 
     public function login(Request $request) {
-        $request->validate([
+
+        $reglas = [
             'email' => 'required|email',
             'password' => 'required',
-        ]);
+        ];
+
+        $mensajes = [
+            'email.required' => 'El correo electrónico es obligatorio.',
+            'email.email' => 'El formato del correo no es válido.',
+            'password.required' => 'La contraseña es obligatoria.',
+        ];
+
+        $request->validate($reglas, $mensajes);
 
         $user = User::where('email', $request->email)->first();
 
