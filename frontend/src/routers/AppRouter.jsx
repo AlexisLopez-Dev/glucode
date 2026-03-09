@@ -4,6 +4,7 @@ import { AuthContext } from '../context/AuthContext';
 import Login from '../pages/Login';
 import { Dashboard } from '../pages/Dashboard';
 import Register from '../pages/Register';
+import Settings from '../pages/Settings';
 
 export const AppRouter = () => {
     
@@ -24,12 +25,17 @@ export const AppRouter = () => {
 
         <Route 
           path="/register" 
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Register />} 
+          element={isAuthenticated ? <Navigate to="/settings" /> : <Register />} 
         />
         
         <Route 
           path="/dashboard" 
           element={isAuthenticated ? <Dashboard /> : <Navigate to="/login" />} 
+        />
+
+        <Route 
+          path="/settings" 
+          element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} 
         />
 
         <Route path="/*" element={<Navigate to="/login" />} />

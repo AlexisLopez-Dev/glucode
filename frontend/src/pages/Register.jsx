@@ -29,7 +29,7 @@ export default function Register() {
             if (token) {
                 await login(token);
                 console.log('¡Registro y Login exitosos!');
-                navigate('/dashboard');
+                navigate('/settings');
             } else {
                 navigate('/login');
             }
