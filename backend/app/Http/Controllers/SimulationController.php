@@ -105,7 +105,8 @@ class SimulationController extends Controller {
 
         return response()->json([
             'message' => 'Simulación guardada correctamente',
-            'data' => $simulation
+            'data' => $simulation,
+            'points' => $points
         ], 201);
     }
 
