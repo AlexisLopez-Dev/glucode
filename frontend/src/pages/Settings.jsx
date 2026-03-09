@@ -55,15 +55,15 @@ export default function Settings() {
             <div className="text-2xl text-gray-700 leading-relaxed">
                 <span className="font-semibold text-gray-900 block mb-2 text-lg">Para las comidas:</span>
                 1 unidad de insulina me cubre 
-                <MadLibInput
+                <MadLibInput 
                     name="carb_ratio" 
                     register={register} 
                     errors={errors} 
                     placeholder="10" 
                     step="0.1" 
-                    rules={{ required: true, min: 0.1 }}
+                    rules={{ required: true, min: 0.1 }} 
                 />
-                gramos de carbohidratos.
+                gramos (ej. 10 gramos = 1 Ración).
             </div>
 
             <div className="text-2xl text-gray-700 leading-relaxed">
