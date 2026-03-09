@@ -17,4 +17,4 @@ El debut en diabetes es un momento de gran confusión e incertidumbre. **Glucode
 * **Control de versiones:** Git & GitHub.
 
 ## Estado del proyecto
-**En fase de análisis y diseño.**
+**En construcción.**
