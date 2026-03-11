@@ -5,6 +5,7 @@ import Login from '../pages/Login';
 import { Dashboard } from '../pages/Dashboard';
 import Register from '../pages/Register';
 import Settings from '../pages/Settings';
+import { History } from '../pages/History';
 
 export const AppRouter = () => {
     
@@ -37,6 +38,12 @@ export const AppRouter = () => {
           path="/settings" 
           element={isAuthenticated ? <Settings /> : <Navigate to="/login" />} 
         />
+
+        <Route 
+          path="/history" 
+          element={isAuthenticated ? <History /> : <Navigate to="/login" />} 
+        />
+
 
         <Route path="/*" element={<Navigate to="/login" />} />
 

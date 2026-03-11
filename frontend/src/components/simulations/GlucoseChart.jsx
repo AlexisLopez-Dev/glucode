@@ -44,7 +44,7 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError }) => {
 
         {serverError && (
             <div className="mb-4 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium text-sm">
-            ⚠️ {serverError}
+                ⚠️ {serverError}
             </div>
         )}
 
@@ -53,10 +53,10 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError }) => {
             {chartData.length === 0 ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                 <span className="text-5xl md:text-6xl mb-4 block animate-bounce">
-                {isSimulating ? '🔬' : '📈'}
+                    {isSimulating ? '🔬' : '📈'}
                 </span>
                 <p className="text-gray-400 font-medium text-lg md:text-xl">
-                {isSimulating ? 'Calculando metabolismo...' : 'Introduce tus parámetros'}
+                    {isSimulating ? 'Calculando metabolismo...' : 'Introduce tus parámetros'}
                 </p>
             </div>
             ) : (
