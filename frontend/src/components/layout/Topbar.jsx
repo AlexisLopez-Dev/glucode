@@ -52,9 +52,9 @@ export const Topbar = ({ toggleSidebar }) => {
             
             <div className="p-3">
               <button
-                onClick={() => {
+                onClick={async () => {
+                  await logout();
                   setIsDropdownOpen(false);
-                  logout();
                 }}
                 className="w-full text-left px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 hover:text-red-700 rounded-xl transition-all flex items-center gap-3"
               >

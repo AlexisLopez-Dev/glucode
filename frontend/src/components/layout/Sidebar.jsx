@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 export const Sidebar = ({ isOpen, closeSidebar }) => {
   return (
     <>
-      {/* Overlay oscuro (Solo visible en móvil cuando el menú está abierto) */}
+      {/* Overlay oscuro */}
       {isOpen && (
         <div 
           className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden transition-opacity"
@@ -12,8 +12,8 @@ export const Sidebar = ({ isOpen, closeSidebar }) => {
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed md:static inset-y-0 left-0 z-40 bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 ease-in-out overflow-hidden shrink-0
-        ${isOpen ? 'w-64 translate-x-0' : 'w-64 -translate-x-full md:w-20 md:translate-x-0'}
+      <aside className={`w-64 fixed md:static inset-y-0 left-0 z-40 bg-white border-r border-gray-200 flex flex-col shadow-sm transition-all duration-300 ease-in-out overflow-hidden shrink-0
+        ${isOpen ? 'translate-x-0' : '-translate-x-full md:w-20 md:translate-x-0'}
       `}>
         
         {/* Logo */}
@@ -56,7 +56,6 @@ export const Sidebar = ({ isOpen, closeSidebar }) => {
             </span>
           </Link>
         </nav>
-
       </aside>
     </>
   );
