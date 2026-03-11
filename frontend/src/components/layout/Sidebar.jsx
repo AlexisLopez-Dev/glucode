@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 
 export const Sidebar = ({ isOpen, closeSidebar }) => {
   return (
@@ -32,30 +32,41 @@ export const Sidebar = ({ isOpen, closeSidebar }) => {
 
         {/* Secciones */}
         <nav className="mt-6 flex flex-col gap-2 px-3 flex-1">
-          <Link 
+          <NavLink 
             onClick={() => window.innerWidth < 768 && closeSidebar()} 
             to="/dashboard" 
             title="Simulador"
-            className="bg-blue-50 text-blue-700 p-3 rounded-xl font-bold transition-colors flex items-center overflow-hidden"
+            className={({ isActive }) => 
+              `p-3 rounded-xl font-bold transition-colors flex items-center overflow-hidden
+              ${isActive 
+                ? 'bg-blue-50 text-blue-700' 
+                : 'text-gray-500 hover:bg-gray-50'}`
+            }
           >
             <div className="w-8 flex items-center justify-center shrink-0"><span className="text-xl">📊</span></div>
             <span className={`ml-3 whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
               Simulador
             </span>
-          </Link>
+          </NavLink>
 
-          <Link 
+          <NavLink 
             onClick={() => window.innerWidth < 768 && closeSidebar()} 
             to="/history" 
             title="Historial"
-            className="text-gray-500 hover:bg-gray-50 p-3 rounded-xl font-medium transition-colors flex items-center overflow-hidden"
+            className={({ isActive }) => 
+              `p-3 rounded-xl font-bold transition-colors flex items-center overflow-hidden
+              ${isActive 
+                ? 'bg-blue-50 text-blue-700' 
+                : 'text-gray-500 hover:bg-gray-50'}`
+            }
           >
             <div className="w-8 flex items-center justify-center shrink-0"><span className="text-xl">🕒</span></div>
             <span className={`ml-3 whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
               Historial
             </span>
-          </Link>
+          </NavLink>
         </nav>
+
       </aside>
     </>
   );
