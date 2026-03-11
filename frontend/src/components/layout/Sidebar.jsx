@@ -46,7 +46,7 @@ export const Sidebar = ({ isOpen, closeSidebar }) => {
 
           <Link 
             onClick={() => window.innerWidth < 768 && closeSidebar()} 
-            to="#" 
+            to="/history" 
             title="Historial"
             className="text-gray-500 hover:bg-gray-50 p-3 rounded-xl font-medium transition-colors flex items-center overflow-hidden"
           >
