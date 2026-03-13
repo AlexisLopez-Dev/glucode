@@ -21,6 +21,20 @@ export const History = () => {
         fetchHistory();
     }, []);
 
+    const handleDeleteSimulation = async (id) => {
+        const isConfirmed = window.confirm('¿Estás seguro de que quieres eliminar esta simulación? Esta acción no se puede deshacer.');
+        
+        if (isConfirmed) {
+        try {
+            await axios.delete(`/simulations/${id}`);
+            setSimulations(simulations.filter(sim => sim.id !== id));
+        } catch (error) {
+            console.error("Error al eliminar la simulación:", error);
+            alert('Hubo un error al eliminar la simulación.');
+        }
+        }
+    };
+
   return (
     <main className="flex-1 overflow-y-auto p-4 md:p-8 w-full bg-gray-50/50">
         <div className="max-w-5xl mx-auto">
@@ -42,7 +56,11 @@ export const History = () => {
             ) : (
             <div className="flex flex-col gap-4">
                 {simulations.map((sim) => (
-                <SimulationCard key={sim.id} simulation={sim} />
+                <SimulationCard 
+                    key={sim.id} 
+                    simulation={sim} 
+                    onDelete={() => handleDeleteSimulation(sim.id)} 
+                />
                 ))}
             </div>
             )}
