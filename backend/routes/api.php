@@ -36,6 +36,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Historial de simulaciones
     Route::get('/simulations', [SimulationController::class, 'index']);
     Route::get('/simulations/{id}', [SimulationController::class, 'show']);
+    Route::delete('/simulations/{id}', [SimulationController::class, 'destroy']);
     Route::post('/simulations', [SimulationController::class, 'store']);
 
 });
