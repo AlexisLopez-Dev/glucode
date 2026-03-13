@@ -31,6 +31,20 @@ class SimulationController extends Controller {
     }
 
 
+    public function destroy(Request $request, $id)
+    {
+        $simulation = Simulation::where('user_id', $request->user()->id)->find($id);
+
+        if (!$simulation) {
+            return response()->json(['message' => 'Simulación no encontrada'], 404);
+        }
+
+        $simulation->delete();
+
+        return response()->json(['message' => 'Simulación eliminada correctamente']);
+    }
+
+
     public function store(Request $request)
     {
         $validado = $request->validate([
