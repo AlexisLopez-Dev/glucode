@@ -25,22 +25,26 @@ const CustomTooltip = ({ active, payload, label }) => {
 };
 
 // Componente principal
-export const GlucoseChart = ({ chartData, isSimulating, serverError }) => {
+export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = false }) => {
   return (
-    <div className="flex-1 bg-white md:rounded-3xl border-y md:border border-gray-200 shadow-sm flex flex-col relative overflow-hidden min-h-[350px] md:min-h-[400px] p-4 md:p-8 h-full">
+    <div className={`relative overflow-hidden w-full h-full flex flex-col
+      ${compact ? '' : 'flex-1 bg-white md:rounded-3xl border-y md:border border-gray-200 shadow-sm min-h-[350px] md:min-h-[400px] p-4 md:p-8'}
+    `}>
 
-        <div className="flex justify-between items-center mb-6 md:mb-8">
-            <div>
-                <h3 className="text-lg md:text-2xl font-bold text-gray-800">Proyección Glucémica</h3>
-                <p className="text-gray-400 font-medium text-xs md:text-sm">Evolución estimada en 4 horas</p>
-            </div>
-            {chartData.length > 0 && (
-            <div className="hidden sm:flex items-center gap-2 text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
-                <span className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-emerald-400 animate-pulse"></span> 
-                Zona Segura
-            </div>
-            )}
-        </div>
+        {!compact && (
+          <div className="flex justify-between items-center mb-6 md:mb-8">
+              <div>
+                  <h3 className="text-lg md:text-2xl font-bold text-gray-800">Proyección Glucémica</h3>
+                  <p className="text-gray-400 font-medium text-xs md:text-sm">Evolución estimada en 4 horas</p>
+              </div>
+              {chartData.length > 0 && (
+              <div className="hidden sm:flex items-center gap-2 text-xs md:text-sm font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100">
+                  <span className="w-2 h-2 md:w-3 md:h-3 rounded-full bg-emerald-400 animate-pulse"></span> 
+                  Zona Segura
+              </div>
+              )}
+          </div>
+        )}
 
         {serverError && (
             <div className="mb-4 bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 font-medium text-sm">
@@ -48,7 +52,7 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError }) => {
             </div>
         )}
 
-        <div className="flex-1 w-full min-h-[300px] mt-4 relative">
+        <div className={`flex-1 w-full relative ${compact ? 'min-h-[200px]' : 'min-h-[300px] mt-4'}`}>
             
             {chartData.length === 0 ? (
             <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
@@ -62,7 +66,7 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError }) => {
             ) : (
             <div className="absolute inset-0">
                 <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 400, height: 300 }}>
-                <LineChart data={chartData} margin={{ top: 20, right: 10, left: -25, bottom: 0 }}>
+                <LineChart data={chartData} margin={compact ? { top: 10, right: 0, left: -25, bottom: 0 } : { top: 20, right: 10, left: -25, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F3F4F6" />
                     <XAxis dataKey="minute" tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 600 }} tickLine={false} axisLine={false} tickFormatter={(val) => `${val} min`} minTickGap={30} />
                     <YAxis domain={[0, dataMax => Math.max(dataMax + 40, 200)]} tick={{ fill: '#9CA3AF', fontSize: 12, fontWeight: 600 }} tickLine={false} axisLine={false} />
