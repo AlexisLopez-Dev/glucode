@@ -81,7 +81,7 @@ class SimulationController extends Controller {
 
         $currentGlucose = $validado['initial_glucose'];
 
-        // Punto Inicial (Minuto 0)
+        // Punto Inicial (Minuto 0) sin ruido visual para coincidir con el valor introducido
         $points[] = [
             'simulation_id' => $simulation->id,
             'minute' => 0,
@@ -96,49 +96,58 @@ class SimulationController extends Controller {
             $carbImpact = 0;
             $insulinImpact = 0;
 
-            // DISTRIBUCIÓN DE CARBOHIDRATOS (Digestión)
+            // DISTRIBUCIÓN DE CARBOHIDRATOS (Suponiendo una digestión mixta)
             if ($minute <= 30) {
-                // Min 0 a 30: Absorbe el 10%
-                $carbImpact = $totalCarbRise * (0.10 / 6);
+                // Min 0 a 30: Absorbe el 15% (Inicio de digestión)
+                $carbImpact = $totalCarbRise * (0.15 / 6);
             } elseif ($minute <= 90) {
-                // Min 30 a 90: Absorbe el 60% (Pico de digestión)
-                $carbImpact = $totalCarbRise * (0.60 / 12);
-            } elseif ($minute <= 180) {
-                // Min 90 a 180: Absorbe el 25% (Fase tardía)
-                $carbImpact = $totalCarbRise * (0.25 / 18);
+                // Min 30 a 90: Absorbe el 55% (Pico principal)
+                $carbImpact = $totalCarbRise * (0.55 / 12);
+            } elseif ($minute <= 150) {
+                // Min 90 a 150: Absorbe el 20% (Fase descendente)
+                $carbImpact = $totalCarbRise * (0.20 / 12);
             } else {
-                // Min 180 a 240: Absorbe el 5% (Cola de digestión)
-                $carbImpact = $totalCarbRise * (0.05 / 12);
+                // Min 150 a 240: Absorbe el 10% (Cola de digestión)
+                $carbImpact = $totalCarbRise * (0.10 / 18);
             }
 
             // DISTRIBUCIÓN DE INSULINA RÁPIDA
             if ($minute <= 30) {
-                // Min 0 a 30: Actúa el 5% (Onset lento)
-                $insulinImpact = $totalInsulinDrop * (0.05 / 6);
+                // Min 0 a 30: Actúa el 10% (Onset lento)
+                $insulinImpact = $totalInsulinDrop * (0.10 / 6);
             } elseif ($minute <= 90) {
-                // Min 30 a 90: Actúa el 40% (Aceleración)
-                $insulinImpact = $totalInsulinDrop * (0.40 / 12);
-            } elseif ($minute <= 180) {
-                // Min 90 a 180: Actúa el 45% (Pico máximo sostenido)
-                $insulinImpact = $totalInsulinDrop * (0.45 / 18);
+                // Min 30 a 90: Actúa el 50% (Pico de acción)
+                $insulinImpact = $totalInsulinDrop * (0.50 / 12);
+            } elseif ($minute <= 150) {
+                // Min 90 a 150: Actúa el 25% (Fase decreciente)
+                $insulinImpact = $totalInsulinDrop * (0.25 / 12);
             } else {
-                // Min 180 a 240: Actúa el 10% (Desvanecimiento)
-                $insulinImpact = $totalInsulinDrop * (0.10 / 12);
+                // Min 150 a 240: Actúa el 15% (Desvanecimiento)
+                $insulinImpact = $totalInsulinDrop * (0.15 / 18);
             }
 
-            // Aplicamos los impactos al nivel de glucosa actual
+            // Aplicamos los impactos al nivel de glucosa actual matemático
             $currentGlucose += $carbImpact;
             $currentGlucose -= $insulinImpact;
 
-            // Condicional para evitar glucosas negativas por seguridad (Hipoglucemia severa)
-            if ($currentGlucose < 20) {
-                $currentGlucose = 20;
+            // Condicional para evitar glucosas negativas por seguridad fisiológica
+            if ($currentGlucose < 30) {
+                $currentGlucose = 30;
+            }
+
+            // RUIDO DE SENSOR CONTINUO (CGM Noise)
+            // Fluctuación aleatoria para simular la lectura irregular de los sensores
+            $sensorNoise = rand(-3, 3);
+            $displayGlucose = round($currentGlucose) + $sensorNoise;
+
+            if ($displayGlucose < 30) {
+                $displayGlucose = 30;
             }
 
             $points[] = [
                 'simulation_id' => $simulation->id,
                 'minute' => $minute,
-                'glucose_value' => round($currentGlucose),
+                'glucose_value' => $displayGlucose,
                 'created_at' => $currentTime,
                 'updated_at' => $currentTime,
             ];
