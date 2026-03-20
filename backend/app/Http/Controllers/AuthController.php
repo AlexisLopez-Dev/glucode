@@ -15,6 +15,7 @@ class AuthController extends Controller {
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
+            'terms' => 'accepted',
         ];
 
         $mensajes = [
@@ -23,7 +24,8 @@ class AuthController extends Controller {
             'email.email' => 'El formato del correo no es válido.',
             'password.min' => 'La contraseña debe tener al menos 6 caracteres.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
-            'name.required' => 'El nombre es obligatorio.'
+            'name.required' => 'El nombre es obligatorio.',
+            'terms.accepted' => 'El aviso médico debe ser aceptado obligatoriamente para usar el servicio.'
         ];
 
         $validado = $request->validate($reglas, $mensajes);

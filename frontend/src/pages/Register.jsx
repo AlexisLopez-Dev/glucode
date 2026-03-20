@@ -3,52 +3,59 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from '../lib/axios';
 import { AuthContext } from '../context/AuthContext';
+import { DisclaimerModal } from '../components/ui/DisclaimerModal';
 
 export default function Register() {
-    const [serverError, setServerError] = useState('');
-    const navigate = useNavigate();
-    const { login } = useContext(AuthContext);
 
-    const { register, handleSubmit, getValues, formState: { errors, isSubmitting } } = useForm();
+  const [serverError, setServerError] = useState('');
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
+  const { register, handleSubmit, getValues, setValue, formState: { errors, isSubmitting } } = useForm();
+  
+  const [showDisclaimer, setShowDisclaimer] = useState(false);
+
+
+  const onSubmit = async (data) => {
+    setServerError('');
     
+    try {
 
-    const onSubmit = async (data) => {
-        setServerError('');
-        
-        try {
+      const response = await axios.post('/register', {
+        name: data.name,
+        email: data.email,
+        password: data.password,
+        password_confirmation: data.password_confirmation,
+        terms: data.terms
+      });
+      
+      const token = response.data.access_token;
+      
+      if (token) {
+        await login(token);
+        console.log('¡Registro y Login exitosos!');
+        navigate('/settings');
+      } else {
+        navigate('/login');
+      }
+      
+    } catch (err) {
+      console.error(err);
+      if (err.response?.data?.errors) {
+        const erroresServidor = err.response?.data?.errors || {};
+        const [[primerError] = ['Error desconocido o de conexión']] = Object.values(erroresServidor);
+        setServerError(primerError);
+      } else {
+        setServerError('Error de conexión o el servidor no responde.');
+      }
+    }
+  };
 
-            const response = await axios.post('/register', {
-                name: data.name,
-                email: data.email,
-                password: data.password,
-                password_confirmation: data.password_confirmation
-            });
-            
-            const token = response.data.access_token;
-            
-            if (token) {
-                await login(token);
-                console.log('¡Registro y Login exitosos!');
-                navigate('/settings');
-            } else {
-                navigate('/login');
-            }
-            
-        } catch (err) {
-            console.error(err);
-            if (err.response?.data?.errors) {
-                const erroresServidor = err.response?.data?.errors || {};
-                const [[primerError] = ['Error desconocido o de conexión']] = Object.values(erroresServidor);
-                setServerError(primerError);
-            } else {
-                setServerError('Error de conexión o el servidor no responde.');
-            }
-        }
-    };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md">
+  <>
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 relative">
+      <div className="bg-white p-8 rounded-xl shadow-lg w-full max-w-md z-10">
         <h2 className="text-3xl font-bold text-center text-blue-600 mb-2">Crear Cuenta</h2>
         <p className="text-center text-gray-500 mb-6">Únete a Glucode para simular tus pautas</p>
         
@@ -117,6 +124,34 @@ export default function Register() {
             {errors.password_confirmation && <span className="text-red-500 text-xs mt-1">{errors.password_confirmation.message}</span>}
           </div>
 
+          {/* CHECKBOX Y DISCLAIMER MÉDICO */}
+          <div className="mt-6 pt-4 border-t border-gray-100">
+            <div className="flex items-start gap-3">
+              <div className="flex items-center h-5 mt-0.5">
+                <input
+                  id="terms"
+                  type="checkbox"
+                  className={`w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer ${errors.terms ? 'border-red-500 focus:ring-red-500' : ''}`}
+                  {...register('terms', { required: "Debes aceptar el aviso médico para crear tu cuenta" })}
+                />
+              </div>
+              <label htmlFor="terms" className="text-sm text-gray-800 font-medium select-none cursor-pointer">
+                He leído, entiendo y acepto el{' '}
+                <button 
+                  type="button" 
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setShowDisclaimer(true);
+                  }}
+                  className="text-blue-600 hover:text-blue-800 underline transition-colors"
+                >
+                  Aviso Médico y Exención de Responsabilidad
+                </button>.
+              </label>
+            </div>
+            {errors.terms && <span className="text-red-500 text-xs mt-1.5 block font-bold">{errors.terms.message}</span>}
+          </div>
+
           <button
             type="submit"
             disabled={isSubmitting}
@@ -125,6 +160,7 @@ export default function Register() {
           >
             {isSubmitting ? 'Registrando...' : 'Crear cuenta'}
           </button>
+
         </form>
 
         <p className="mt-6 text-center text-sm text-gray-600">
@@ -136,5 +172,16 @@ export default function Register() {
         
       </div>
     </div>
+
+    <DisclaimerModal 
+      isOpen={showDisclaimer} 
+      onClose={() => setShowDisclaimer(false)} 
+      onAccept={() => {
+        setValue('terms', true);
+        setShowDisclaimer(false);
+      }} 
+    />
+    
+  </>
   );
 }
