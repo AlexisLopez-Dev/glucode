@@ -124,33 +124,33 @@ export default function Register() {
             {errors.password_confirmation && <span className="text-red-500 text-xs mt-1">{errors.password_confirmation.message}</span>}
           </div>
 
-          {/* CHECKBOX Y DISCLAIMER MÉDICO */}
-          <div className="mt-6 pt-4 border-t border-gray-100">
-            <div className="flex items-start gap-3">
-              <div className="flex items-center h-5 mt-0.5">
-                <input
-                  id="terms"
-                  type="checkbox"
-                  className={`w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer ${errors.terms ? 'border-red-500 focus:ring-red-500' : ''}`}
-                  {...register('terms', { required: "Debes aceptar el aviso médico para crear tu cuenta" })}
-                />
-              </div>
-              <label htmlFor="terms" className="text-sm text-gray-800 font-medium select-none cursor-pointer">
-                He leído, entiendo y acepto el{' '}
+          {/* CHECKBOX Y DISCLAIMER MÉDICO */}          
+          <div className="flex items-start gap-3 mt-6 pt-4 border-t border-gray-100">
+            <div className="flex items-center shrink-0 mt-0.5">
+              <input
+                id="terms"
+                type="checkbox"
+                className={`w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 ${errors.terms ? 'border-red-500 focus:ring-red-500' : ''}`}
+                {...register('terms', { required: "Debes aceptar el aviso médico para continuar" })}
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="terms" className="text-sm text-gray-600 leading-snug cursor-pointer block">
+                He leído y acepto el{' '}
                 <button 
                   type="button" 
                   onClick={(e) => {
                     e.preventDefault();
                     setShowDisclaimer(true);
                   }}
-                  className="text-blue-600 hover:text-blue-800 underline transition-colors"
+                  className="text-blue-600 hover:text-blue-800 underline transition-colors inline align-baseline text-left font-medium"
                 >
                   Aviso Médico y Exención de Responsabilidad
-                </button>.
+                </button>
               </label>
             </div>
-            {errors.terms && <span className="text-red-500 text-xs mt-1.5 block font-bold">{errors.terms.message}</span>}
           </div>
+          {errors.terms && <span className="text-red-500 text-xs block font-bold mt-1.5">{errors.terms.message}</span>}
 
           <button
             type="submit"
