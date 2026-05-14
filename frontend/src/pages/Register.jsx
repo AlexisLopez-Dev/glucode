@@ -1,15 +1,13 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from '../lib/axios';
-import { AuthContext } from '../context/AuthContext';
 import { DisclaimerModal } from '../components/ui/DisclaimerModal';
 
 export default function Register() {
 
   const [serverError, setServerError] = useState('');
   const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
 
   const { register, handleSubmit, getValues, setValue, formState: { errors, isSubmitting } } = useForm();
   
@@ -20,7 +18,6 @@ export default function Register() {
     setServerError('');
     
     try {
-
       const response = await axios.post('/register', {
         name: data.name,
         email: data.email,
@@ -28,17 +25,10 @@ export default function Register() {
         password_confirmation: data.password_confirmation,
         terms: data.terms
       });
-      
-      const token = response.data.access_token;
-      
-      if (token) {
-        await login(token);
-        console.log('¡Registro y Login exitosos!');
-        navigate('/settings');
-      } else {
-        navigate('/login');
-      }
-      
+
+      sessionStorage.setItem('pending_verification_email', response.data.email);
+      navigate('/verify-email');
+
     } catch (err) {
       console.error(err);
       if (err.response?.data?.errors) {
