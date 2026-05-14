@@ -7,6 +7,7 @@ import Register from '../pages/Register';
 import Settings from '../pages/Settings';
 import { History } from '../pages/History';
 import { MainLayout } from '../components/layout/MainLayout';
+import VerifyEmail from '../pages/VerifyEmail';
 
 export const AppRouter = () => {
     
@@ -28,6 +29,11 @@ export const AppRouter = () => {
         <Route 
           path="/register" 
           element={isAuthenticated ? <Navigate to="/settings" /> : <Register />} 
+        />
+
+        <Route 
+          path="/verify-email" 
+          element={isAuthenticated ? <Navigate to="/dashboard" /> : <VerifyEmail />} 
         />
         
         <Route 

@@ -1,27 +1,26 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MedicalSettingController;
 use App\Http\Controllers\SimulationController;
-
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/ping', function () {
     return response()->json([
         'status' => 'ok',
-        'message' => '¡Hola desde el Backend de Glucode! (Ahora, con auto-deploy funcionando)'
+        'message' => '¡Hola desde el Backend de Glucode! (Ahora, con auto-deploy funcionando)',
     ]);
 });
 
-
-// Rutas públicas
+// Rutas públicas de autenticación
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('/email/verify', [AuthController::class, 'verifyEmail']);
+Route::post('/email/resend', [AuthController::class, 'resendVerificationCode']);
 
-
-// Rutas privadas
-Route::middleware('auth:sanctum')->group(function () {
+// Rutas privadas (requieren token + cuenta verificada)
+Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 
     Route::get('/user', function (Request $request) {
         return $request->user();
