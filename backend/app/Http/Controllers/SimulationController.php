@@ -2,14 +2,66 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Simulation;
-use App\Models\MedicalSetting;
-use Illuminate\Http\Request;
 use App\Models\GlucosePoint;
+use App\Models\MedicalSetting;
+use App\Models\Simulation;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
-class SimulationController extends Controller {
+class SimulationController extends Controller
+{
+    // Ventana de simulación
+    private const SIMULATION_DURATION_MINUTES = 240;
 
-    public function index(Request $request)
+    private const SIMULATION_STEP_MINUTES = 5;
+
+    // Glucosa interna (modelo): sin concentraciones negativas en el cálculo acumulado
+    private const GLUCOSE_MODEL_MIN = 0;
+
+    // Valor mostrado (CGM): suelo típico de sensor; no se escribe en la glucosa interna
+    private const GLUCOSE_SAFETY_FLOOR = 30;
+
+    private const CGM_NOISE_RANGE = 3;
+
+    // Límites compartidos de fase (minutos)
+    private const PHASE_1_END = 30;
+
+    private const PHASE_2_END = 90;
+
+    private const PHASE_3_END = 150;
+
+    // Pasos por fase: cuántas veces avanza el bucle (de 5 en 5 min) dentro de cada tramo.
+    // Ej.: 0–30 min → 6 pasos; en cada paso se aplica (fracción de la fase) / (pasos de la fase).
+    private const PHASE_1_STEPS = 6;     // 0–30 min
+
+    private const PHASE_2_STEPS = 12;    // 30–90 min
+
+    private const PHASE_3_STEPS = 12;    // 90–150 min
+
+    private const PHASE_4_STEPS = 18;    // 150–240 min
+
+    // Carbos (digestión mixta): qué parte de la subida total por carbohidratos cae en cada fase.
+    // Las cuatro fracciones suman 1; el aporte en un intervalo de 5 min es (fracción de la fase) / (pasos de la fase).
+    private const CARB_FRACTION_PHASE_1 = 0.15;
+
+    private const CARB_FRACTION_PHASE_2 = 0.55;
+
+    private const CARB_FRACTION_PHASE_3 = 0.20;
+
+    private const CARB_FRACTION_PHASE_4 = 0.10;
+
+    // Insulina rápida: qué parte del descenso total por insulina se reparte en cada fase.
+    // Las cuatro fracciones suman 1; la bajada en un intervalo de 5 min es (fracción de la fase) / (pasos de la fase).
+    private const INSULIN_FRACTION_PHASE_1 = 0.10;
+
+    private const INSULIN_FRACTION_PHASE_2 = 0.50;
+
+    private const INSULIN_FRACTION_PHASE_3 = 0.25;
+
+    private const INSULIN_FRACTION_PHASE_4 = 0.15;
+
+    public function index(Request $request): JsonResponse
     {
         $simulations = Simulation::where('user_id', $request->user()->id)
             ->orderBy('created_at', 'desc')
@@ -19,10 +71,8 @@ class SimulationController extends Controller {
         return response()->json($simulations);
     }
 
-
-    public function show(Request $request, $id)
+    public function show(Request $request, $id): JsonResponse
     {
-        // Devuelve la simulación junto con su array de puntos
         $simulation = Simulation::with('glucosePoints')
             ->where('user_id', $request->user()->id)
             ->findOrFail($id);
@@ -30,12 +80,11 @@ class SimulationController extends Controller {
         return response()->json($simulation);
     }
 
-
-    public function destroy(Request $request, $id)
+    public function destroy(Request $request, $id): JsonResponse
     {
         $simulation = Simulation::where('user_id', $request->user()->id)->find($id);
 
-        if (!$simulation) {
+        if (! $simulation) {
             return response()->json(['message' => 'Simulación no encontrada'], 404);
         }
 
@@ -44,124 +93,147 @@ class SimulationController extends Controller {
         return response()->json(['message' => 'Simulación eliminada correctamente']);
     }
 
-
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validado = $request->validate([
+        $validated = $request->validate([
             'carbs_ingested' => 'required|integer|min:0',
             'initial_glucose' => 'required|integer|min:20',
             'insulin_administered' => 'required|numeric|min:0',
         ]);
 
-        // La configuración médica actual del usuario
         $settings = MedicalSetting::where('user_id', $request->user()->id)->first();
 
-        if (!$settings) {
+        if (! $settings) {
             return response()->json([
-                'message' => 'Debes configurar tu perfil médico antes de hacer una simulación.'
+                'message' => 'Debes configurar tu perfil médico antes de hacer una simulación.',
             ], 400);
         }
 
         $simulation = Simulation::create([
             'user_id' => $request->user()->id,
-            'carbs_ingested' => $validado['carbs_ingested'],
-            'initial_glucose' => $validado['initial_glucose'],
-            'insulin_administered' => $validado['insulin_administered'],
+            'carbs_ingested' => $validated['carbs_ingested'],
+            'initial_glucose' => $validated['initial_glucose'],
+            'insulin_administered' => $validated['insulin_administered'],
             'ratio_snapshot' => $settings->carb_ratio,
             'factor_snapshot' => $settings->sensitivity_factor,
         ]);
 
-        // --- INICIO GENERACIÓN DE PUNTOS ---
+        $totalCarbRise = $validated['carbs_ingested'] * ($settings->sensitivity_factor / $settings->carb_ratio);
+        $totalInsulinDrop = $validated['insulin_administered'] * $settings->sensitivity_factor;
 
-        $points = [];
-        $currentTime = now();
-
-        $totalCarbRise = $validado['carbs_ingested'] * ($settings->sensitivity_factor / $settings->carb_ratio);
-        $totalInsulinDrop = $validado['insulin_administered'] * $settings->sensitivity_factor;
-
-        $currentGlucose = $validado['initial_glucose'];
-
-        // Punto Inicial (Minuto 0) sin ruido visual para coincidir con el valor introducido
-        $points[] = [
-            'simulation_id' => $simulation->id,
-            'minute' => 0,
-            'glucose_value' => round($currentGlucose),
-            'created_at' => $currentTime,
-            'updated_at' => $currentTime,
-        ];
-
-        // Bucle de 4 horas, calculando cada 5 minutos
-        for ($minute = 5; $minute <= 240; $minute += 5) {
-
-            $carbImpact = 0;
-            $insulinImpact = 0;
-
-            // DISTRIBUCIÓN DE CARBOHIDRATOS (Suponiendo una digestión mixta)
-            if ($minute <= 30) {
-                // Min 0 a 30: Absorbe el 15% (Inicio de digestión)
-                $carbImpact = $totalCarbRise * (0.15 / 6);
-            } elseif ($minute <= 90) {
-                // Min 30 a 90: Absorbe el 55% (Pico principal)
-                $carbImpact = $totalCarbRise * (0.55 / 12);
-            } elseif ($minute <= 150) {
-                // Min 90 a 150: Absorbe el 20% (Fase descendente)
-                $carbImpact = $totalCarbRise * (0.20 / 12);
-            } else {
-                // Min 150 a 240: Absorbe el 10% (Cola de digestión)
-                $carbImpact = $totalCarbRise * (0.10 / 18);
-            }
-
-            // DISTRIBUCIÓN DE INSULINA RÁPIDA
-            if ($minute <= 30) {
-                // Min 0 a 30: Actúa el 10% (Onset lento)
-                $insulinImpact = $totalInsulinDrop * (0.10 / 6);
-            } elseif ($minute <= 90) {
-                // Min 30 a 90: Actúa el 50% (Pico de acción)
-                $insulinImpact = $totalInsulinDrop * (0.50 / 12);
-            } elseif ($minute <= 150) {
-                // Min 90 a 150: Actúa el 25% (Fase decreciente)
-                $insulinImpact = $totalInsulinDrop * (0.25 / 12);
-            } else {
-                // Min 150 a 240: Actúa el 15% (Desvanecimiento)
-                $insulinImpact = $totalInsulinDrop * (0.15 / 18);
-            }
-
-            // Aplicamos los impactos al nivel de glucosa actual matemático
-            $currentGlucose += $carbImpact;
-            $currentGlucose -= $insulinImpact;
-
-            // Condicional para evitar glucosas negativas por seguridad fisiológica
-            if ($currentGlucose < 30) {
-                $currentGlucose = 30;
-            }
-
-            // RUIDO DE SENSOR CONTINUO (CGM Noise)
-            // Fluctuación aleatoria para simular la lectura irregular de los sensores
-            $sensorNoise = rand(-3, 3);
-            $displayGlucose = round($currentGlucose) + $sensorNoise;
-
-            if ($displayGlucose < 30) {
-                $displayGlucose = 30;
-            }
-
-            $points[] = [
-                'simulation_id' => $simulation->id,
-                'minute' => $minute,
-                'glucose_value' => $displayGlucose,
-                'created_at' => $currentTime,
-                'updated_at' => $currentTime,
-            ];
-        }
+        $points = $this->generateGlucosePoints(
+            $simulation,
+            $validated['initial_glucose'],
+            $totalCarbRise,
+            $totalInsulinDrop
+        );
 
         GlucosePoint::insert($points);
-
-        // --- FIN GENERACIÓN DE PUNTOS ---
 
         return response()->json([
             'message' => 'Simulación guardada correctamente',
             'data' => $simulation,
-            'points' => $points
+            'points' => $points,
         ], 201);
     }
 
+    /**
+     * Genera todos los puntos de glucosa de la ventana de simulación completa,
+     * aplicando absorción de carbohidratos, acción de la insulina, suelo interno (sin negativos),
+     * suelo típico de CGM en el valor guardado y ruido del sensor.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    private function generateGlucosePoints(
+        Simulation $simulation,
+        float $initialGlucose,
+        float $totalCarbRise,
+        float $totalInsulinDrop
+    ): array {
+        $points = [];
+        $currentTime = now();
+        $currentGlucose = $initialGlucose;
+
+        $points[] = $this->buildPoint($simulation->id, 0, round($currentGlucose), $currentTime);
+
+        for (
+            $minute = self::SIMULATION_STEP_MINUTES;
+            $minute <= self::SIMULATION_DURATION_MINUTES;
+            $minute += self::SIMULATION_STEP_MINUTES
+        ) {
+            $currentGlucose += $this->calculateCarbImpact($minute, $totalCarbRise);
+            $currentGlucose -= $this->calculateInsulinImpact($minute, $totalInsulinDrop);
+
+            // Suelo del modelo: la glucosa interna no baja de 0 (sin concentraciones negativas).
+            $currentGlucose = max($currentGlucose, self::GLUCOSE_MODEL_MIN);
+
+            // Suelo del valor persistido (CGM): recorte típico por debajo de 30; no se sobrescribe la glucosa interna.
+            $displayGlucose = max(
+                round($currentGlucose) + rand(-self::CGM_NOISE_RANGE, self::CGM_NOISE_RANGE),
+                self::GLUCOSE_SAFETY_FLOOR
+            );
+
+            $points[] = $this->buildPoint($simulation->id, $minute, $displayGlucose, $currentTime);
+        }
+
+        return $points;
+    }
+
+    /**
+     * Devuelve el incremento de glucosa en cada paso (cada 5 min) por absorción de carbohidratos,
+     * según un modelo de digestión mixta en cuatro fases.
+     */
+    private function calculateCarbImpact(int $minute, float $totalCarbRise): float
+    {
+        if ($minute <= self::PHASE_1_END) {
+            return $totalCarbRise * (self::CARB_FRACTION_PHASE_1 / self::PHASE_1_STEPS);
+        }
+
+        if ($minute <= self::PHASE_2_END) {
+            return $totalCarbRise * (self::CARB_FRACTION_PHASE_2 / self::PHASE_2_STEPS);
+        }
+
+        if ($minute <= self::PHASE_3_END) {
+            return $totalCarbRise * (self::CARB_FRACTION_PHASE_3 / self::PHASE_3_STEPS);
+        }
+
+        return $totalCarbRise * (self::CARB_FRACTION_PHASE_4 / self::PHASE_4_STEPS);
+    }
+
+    /**
+     * Devuelve la reducción de glucosa en cada paso por la acción de la insulina rápida,
+     * repartida en cuatro fases farmacocinéticas.
+     */
+    private function calculateInsulinImpact(int $minute, float $totalInsulinDrop): float
+    {
+        if ($minute <= self::PHASE_1_END) {
+            return $totalInsulinDrop * (self::INSULIN_FRACTION_PHASE_1 / self::PHASE_1_STEPS);
+        }
+
+        if ($minute <= self::PHASE_2_END) {
+            return $totalInsulinDrop * (self::INSULIN_FRACTION_PHASE_2 / self::PHASE_2_STEPS);
+        }
+
+        if ($minute <= self::PHASE_3_END) {
+            return $totalInsulinDrop * (self::INSULIN_FRACTION_PHASE_3 / self::PHASE_3_STEPS);
+        }
+
+        return $totalInsulinDrop * (self::INSULIN_FRACTION_PHASE_4 / self::PHASE_4_STEPS);
+    }
+
+    /**
+     * Construye un único registro de punto de glucosa para la inserción masiva.
+     *
+     * @return array<string, mixed>
+     */
+    private function buildPoint(int $simulationId, int $minute, float $glucoseValue, Carbon $timestamp): array
+    {
+        return [
+            'simulation_id' => $simulationId,
+            'minute' => $minute,
+            'glucose_value' => $glucoseValue,
+            'created_at' => $timestamp,
+            'updated_at' => $timestamp,
+        ];
+    }
 }
