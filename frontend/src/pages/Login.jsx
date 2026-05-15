@@ -17,15 +17,16 @@ export default function Login() {
         setServerError('');
         try {
             const response = await axios.post('/login', data);
-            const token = response.data.access_token;
-            
-            await login(token);
-            
+            await login(response.data.access_token);
             navigate('/dashboard');
-
         } catch (err) {
             console.error(err);
-            setServerError('Credenciales incorrectas o error de conexión');
+            if (err.response?.data?.requires_verification) {
+                sessionStorage.setItem('pending_verification_email', err.response.data.email);
+                navigate('/verify-email');
+                return;
+            }
+            setServerError(err.response?.data?.message || 'Credenciales incorrectas o error de conexión.');
         }
     };
 
