@@ -1,5 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { Link } from 'react-router-dom';
+import { IconSettings, IconInfo, IconPlay, IconSpinner } from '../icons/Icons';
 
 export const ParameterPanel = ({ onSimulate, isSimulating }) => {
 
@@ -13,7 +14,7 @@ export const ParameterPanel = ({ onSimulate, isSimulating }) => {
                 <p className="text-xs text-text-muted font-medium">Ajusta los valores para simular</p>
             </div>
             <Link to="/settings" className="p-2 text-text-subtle hover:text-primary hover:bg-primary-subtle rounded-lg transition-all">
-                <span className="text-xl">⚙️</span>
+                <IconSettings className="w-5 h-5" />
             </Link>
         </div>
 
@@ -35,7 +36,7 @@ export const ParameterPanel = ({ onSimulate, isSimulating }) => {
 
                 <div className="bg-surface-alt p-4 md:p-5 rounded-2xl border border-border-subtle shadow-sm relative">
                     <div className="absolute top-3 right-3 group">
-                    <span className="text-text-subtle cursor-help text-lg">ℹ️</span>
+                    <span className="text-text-subtle cursor-help"><IconInfo className="w-4 h-4" /></span>
                     <div className="absolute right-0 w-48 p-3 bg-inverse-surface text-on-primary text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 mt-1 shadow-xl hidden md:block">
                         <p className="font-bold mb-1">¿Dudas con las raciones?</p>
                         <p className="text-inverse-text">1 ración (R) equivale a 10g de carbohidratos.</p>
@@ -71,7 +72,9 @@ export const ParameterPanel = ({ onSimulate, isSimulating }) => {
 
             <div className="pt-6">
                 <button type="submit" disabled={isSimulating} className={`w-full text-on-primary font-bold py-4 rounded-xl text-lg transition-all shadow-lg flex justify-center items-center gap-2 ${isSimulating ? 'bg-disabled-strong' : 'bg-cta-strong hover:bg-cta-strong-hover active:scale-95'}`}>
-                    {isSimulating ? 'Calculando...' : '▶ Simular Curva'}
+                    {isSimulating
+                        ? <><IconSpinner className="w-5 h-5" /><span>Calculando...</span></>
+                        : <><IconPlay className="w-5 h-5" /><span>Simular Curva</span></>}
                 </button>
             </div>
         </form>

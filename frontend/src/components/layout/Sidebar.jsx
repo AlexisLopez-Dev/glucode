@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router-dom';
+import { IconSimulator, IconHistory } from '../icons/Icons';
 
 export const Sidebar = ({ isOpen, closeSidebar }) => {
   return (
@@ -43,7 +44,7 @@ export const Sidebar = ({ isOpen, closeSidebar }) => {
                 : 'text-text-muted hover:bg-surface-alt'}`
             }
           >
-            <div className="w-8 flex items-center justify-center shrink-0"><span className="text-xl">📊</span></div>
+            <div className="w-8 flex items-center justify-center shrink-0"><IconSimulator className="w-5 h-5" /></div>
             <span className={`ml-3 whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
               Simulador
             </span>
@@ -60,7 +61,7 @@ export const Sidebar = ({ isOpen, closeSidebar }) => {
                 : 'text-text-muted hover:bg-surface-alt'}`
             }
           >
-            <div className="w-8 flex items-center justify-center shrink-0"><span className="text-xl">🕒</span></div>
+            <div className="w-8 flex items-center justify-center shrink-0"><IconHistory className="w-5 h-5" /></div>
             <span className={`ml-3 whitespace-nowrap transition-opacity duration-200 ${isOpen ? 'opacity-100' : 'opacity-0'}`}>
               Historial
             </span>

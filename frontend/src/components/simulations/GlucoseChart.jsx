@@ -1,4 +1,5 @@
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceArea } from 'recharts';
+import { IconWarning, IconSpinner, IconSimulator } from '../icons/Icons';
 
 // Componente complementario: Letrero informativo que se muestra al pasar el ratón por la gráfica
 const CustomTooltip = ({ active, payload, label }) => {
@@ -47,17 +48,19 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = f
         )}
 
         {serverError && (
-            <div className="mb-4 bg-danger-subtle text-danger-strong p-4 rounded-xl border border-danger-border-soft font-medium text-sm">
-                ⚠️ {serverError}
+            <div className="mb-4 bg-danger-subtle text-danger-strong p-4 rounded-xl border border-danger-border-soft font-medium text-sm flex items-center gap-2">
+                <IconWarning className="w-4 h-4 shrink-0" /> {serverError}
             </div>
         )}
 
         <div className={`flex-1 w-full relative ${compact ? 'min-h-[200px]' : 'min-h-[300px] mt-4'}`}>
             
             {chartData.length === 0 ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="text-5xl md:text-6xl mb-4 block animate-bounce">
-                    {isSimulating ? '🔬' : '📈'}
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center gap-4">
+                <span className="text-text-subtle block">
+                    {isSimulating
+                        ? <IconSpinner className="w-12 h-12" />
+                        : <IconSimulator className="w-12 h-12" />}
                 </span>
                 <p className="text-text-subtle font-medium text-lg md:text-xl">
                     {isSimulating ? 'Calculando metabolismo...' : 'Introduce tus parámetros'}

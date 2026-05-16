@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { GlucoseChart } from './GlucoseChart';
+import { IconHistory, IconArrowRight, IconCarbs, IconInsulin } from '../icons/Icons';
 
 export const SimulationCard = ({ simulation, onDelete }) => {
 
@@ -46,7 +47,7 @@ export const SimulationCard = ({ simulation, onDelete }) => {
             {/* Fecha */}
             <div className="flex items-center gap-4 w-full xl:w-auto">
                 <div className="bg-primary-subtle-strong text-primary p-3 rounded-xl shrink-0">
-                    <span className="text-xl">🕒</span>
+                    <IconHistory className="w-5 h-5" />
                 </div>
                 <div className="text-left">
                     <p className="font-bold text-text capitalize">{formattedDate}</p>
@@ -64,7 +65,7 @@ export const SimulationCard = ({ simulation, onDelete }) => {
                     >
                         {simulation.initial_glucose}
                     </span>
-                    <span className="text-text-subtle text-sm">➔</span>
+                    <IconArrowRight className="w-4 h-4 text-text-subtle" />
                     <span 
                     title="Glucosa final (4h)" 
                     className={`font-black ${getGlucoseColor(finalGlucose)}`}
@@ -76,12 +77,12 @@ export const SimulationCard = ({ simulation, onDelete }) => {
                 {/* Raciones e Insulina */}
                 <div className="flex items-center gap-3 bg-primary-subtle/50 px-4 py-2 rounded-xl border border-primary-subtle-strong/50">
                     <div className="flex items-center gap-1.5" title="Raciones de Hidratos">
-                        <span>🍎</span>
+                        <IconCarbs className="w-4 h-4" />
                         <span className="font-bold text-text-secondary">{simulation.carbs_ingested / 10} R</span>
                     </div>
                     <div className="w-px h-5 bg-border-strong"></div>
                     <div className="flex items-center gap-1.5" title="Insulina administrada">
-                        <span>💉</span>
+                        <IconInsulin className="w-4 h-4" />
                         <span className="font-bold text-text-secondary">{simulation.insulin_administered} U</span>
                     </div>
                 </div>

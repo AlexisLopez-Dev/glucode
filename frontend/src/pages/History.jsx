@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from '../lib/axios';
 import { SimulationCard } from '../components/simulations/SimulationCard';
+import { IconSpinner } from '../components/icons/Icons';
 
 export const History = () => {
     const [simulations, setSimulations] = useState([]);
@@ -46,7 +47,7 @@ export const History = () => {
             
             {isLoading ? (
             <div className="flex justify-center items-center py-20">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <IconSpinner className="w-12 h-12 text-primary" />
             </div>
             ) : simulations.length === 0 ? (
             <div className="bg-surface p-12 rounded-3xl border border-border-strong text-center shadow-sm">
