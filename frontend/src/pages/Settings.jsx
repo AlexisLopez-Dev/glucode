@@ -38,22 +38,22 @@ export default function Settings() {
 
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-2xl">
+    <div className="min-h-screen bg-surface-alt flex flex-col items-center justify-center p-4">
+      <div className="bg-surface p-10 rounded-2xl shadow-xl w-full max-w-2xl">
         
-        <h2 className="text-4xl font-bold text-gray-800 mb-2">Configuración inicial</h2>
-        <p className="text-gray-500 mb-10 text-lg">Completa las frases para configurar tu perfil metabólico.</p>
+        <h2 className="text-4xl font-bold text-text mb-2">Configuración inicial</h2>
+        <p className="text-text-muted mb-10 text-lg">Completa las frases para configurar tu perfil metabólico.</p>
         
         {serverError && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6 text-sm">
+          <div className="bg-danger-subtle border border-danger-border text-danger-text px-4 py-3 rounded mb-6 text-sm">
             {serverError}
           </div>
         )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-12">
           
-            <div className="text-2xl text-gray-700 leading-relaxed">
-                <span className="font-semibold text-gray-900 block mb-2 text-lg">Para las comidas:</span>
+            <div className="text-2xl text-text-secondary leading-relaxed">
+                <span className="font-semibold text-text-strong block mb-2 text-lg">Para las comidas:</span>
                 1 unidad de insulina me cubre 
                 <MadLibInput 
                     name="carb_ratio" 
@@ -66,8 +66,8 @@ export default function Settings() {
                 gramos (ej. 10 gramos = 1 Ración).
             </div>
 
-            <div className="text-2xl text-gray-700 leading-relaxed">
-                <span className="font-semibold text-gray-900 block mb-2 text-lg">Para corregir hiperglucemias:</span>
+            <div className="text-2xl text-text-secondary leading-relaxed">
+                <span className="font-semibold text-text-strong block mb-2 text-lg">Para corregir hiperglucemias:</span>
                 Corrijo a partir de 
                 <MadLibInput 
                     name="correction_start" 
@@ -104,8 +104,8 @@ export default function Settings() {
                 <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full text-white font-bold py-4 px-8 rounded-xl text-xl transition duration-200 shadow-lg
-                    ${isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-black hover:bg-gray-800'}`}
+                className={`w-full text-on-primary font-bold py-4 px-8 rounded-xl text-xl transition duration-200 shadow-lg
+                    ${isSubmitting ? 'bg-disabled-strong cursor-not-allowed' : 'bg-cta-strong hover:bg-cta-strong-hover'}`}
                 >
                 {isSubmitting ? 'Guardando...' : 'Comenzar a descifrar'}
                 </button>
