@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import axios from '../lib/axios';
 import { AuthContext } from './AuthContext';
 
+/**
+ * AuthProvider — Contexto de autenticación (Laravel Sanctum)
+ *
+ * Al montar, valida el token en localStorage contra GET /user.
+ * Expone login (guarda token + carga usuario), logout y estado isLoading para el router.
+ */
 export const AuthProvider = ({ children }) => {
   
   const [user, setUser] = useState(null);
