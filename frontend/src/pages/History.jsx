@@ -1,8 +1,12 @@
 import { useState, useEffect } from 'react';
 import axios from '../lib/axios';
 import { SimulationCard } from '../components/simulations/SimulationCard';
-import { IconSpinner } from '../components/icons/Icons';
 
+/**
+ * History — Listado de simulaciones guardadas del usuario
+ *
+ * Carga GET /simulations y delega el borrado en SimulationCard (DELETE /simulations/:id).
+ */
 export const History = () => {
     const [simulations, setSimulations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -23,9 +27,6 @@ export const History = () => {
     }, []);
 
     const handleDeleteSimulation = async (id) => {
-        const isConfirmed = window.confirm('¿Estás seguro de que quieres eliminar esta simulación? Esta acción no se puede deshacer.');
-        
-        if (isConfirmed) {
         try {
             await axios.delete(`/simulations/${id}`);
             setSimulations(simulations.filter(sim => sim.id !== id));
@@ -33,8 +34,25 @@ export const History = () => {
             console.error("Error al eliminar la simulación:", error);
             alert('Hubo un error al eliminar la simulación.');
         }
-        }
     };
+
+    const SkeletonCard = () => (
+        <div className="rounded-2xl border bg-surface border-border shadow-card w-full min-h-[72px] px-5 py-4 flex flex-col xl:flex-row items-center justify-between gap-4 animate-pulse">
+            <div className="flex items-center gap-4 w-full xl:w-auto">
+                <div className="w-11 h-11 rounded-xl bg-border-subtle shrink-0" />
+                <div className="space-y-2">
+                    <div className="h-4 w-32 bg-border-strong rounded" />
+                    <div className="h-3 w-24 bg-border rounded" />
+                </div>
+            </div>
+            <div className="flex flex-wrap items-center justify-between w-full xl:w-auto gap-4 sm:gap-5">
+                <div className="h-10 w-[120px] sm:w-[140px] bg-border-subtle rounded-xl" />
+                <div className="h-10 w-[140px] sm:w-[150px] bg-border-subtle rounded-xl" />
+                <div className="w-11 h-11 rounded-xl bg-border-subtle shrink-0" />
+                <div className="w-6 h-6 rounded bg-border-subtle shrink-0" />
+            </div>
+        </div>
+    );
 
   return (
     <main className="flex-1 overflow-y-auto p-4 md:p-8 w-full bg-surface-alt/50">
@@ -46,8 +64,10 @@ export const History = () => {
             </header>
             
             {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-                <IconSpinner className="w-12 h-12 text-primary" />
+            <div className="flex flex-col gap-4">
+                <SkeletonCard />
+                <SkeletonCard />
+                <SkeletonCard />
             </div>
             ) : simulations.length === 0 ? (
             <div className="bg-surface p-12 rounded-3xl border border-border-strong text-center shadow-sm">

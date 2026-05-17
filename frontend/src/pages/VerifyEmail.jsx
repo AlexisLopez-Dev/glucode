@@ -3,6 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import axios from '../lib/axios';
 import { AuthContext } from '../context/AuthContext';
 
+/**
+ * VerifyEmail — Verificación de cuenta con código de 6 dígitos
+ *
+ * Lee el email pendiente de sessionStorage (tras el registro).
+ * Valida el código con la API, inicia sesión vía AuthContext y permite reenviar con cooldown.
+ */
 export default function VerifyEmail() {
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);

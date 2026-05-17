@@ -4,7 +4,7 @@
  * Estilo: Contorneado (basado en trazos), grosor de 1.6-1.8px.
  * Origen: Tabler Icons.
  *
- * Todos los iconos aceptan la propiedad `className` y utilizan `currentColor`
+ * Los iconos aceptan la propiedad `className` y utilizan `currentColor`
  * para heredar el color del texto circundante. El viewBox es 24x24 para 
  * mantener la fidelidad con la fuente original, escalado a 20x20 mediante props.
  */
@@ -210,3 +210,62 @@ export const IconInsulin = ({ className }) => (
     </svg>
 );
 
+// Cerrar / X
+export const IconX = ({ className }) => (
+    <svg
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        aria-hidden="true"
+    >
+        <path d="M18 6l-12 12" />
+        <path d="M6 6l12 12" />
+    </svg>
+);
+
+// Papelera / Eliminar
+export const IconTrash = ({ className }) => (
+    <svg
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        aria-hidden="true"
+    >
+        <path d="M4 7h16" />
+        <path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" />
+        <path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" />
+        <path d="M10 12l0 6" />
+        <path d="M14 12l0 6" />
+    </svg>
+);
+
+// Chevron izquierda (colapsar barra lateral)
+export const IconChevronLeft = ({ className, style }) => (
+    <svg
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        style={style}
+        aria-hidden="true"
+    >
+        <path d="M15 6l-6 6l6 6" />
+    </svg>
+);
