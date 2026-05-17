@@ -1,1 +1,152 @@
 @import "tailwindcss";
+
+@theme {
+  /* Superficies oscuras (sidebar, auth, botones) */
+  --color-dark-surface: #0f172a;
+  --color-dark-surface-alt: #1e293b;
+  --color-dark-text: #f1f5f9;
+  --color-dark-text-muted: #94a3b8;
+
+  /* Marca e interactivos */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-primary-darker: #1e40af;
+  --color-primary-light: #3b82f6;
+  --color-primary-muted: #93c5fd;
+  --color-primary-subtle: #eff6ff;
+  --color-primary-subtle-strong: #dbeafe;
+  --color-primary-on-subtle: #1d4ed8;
+
+  /* Neutros */
+  --color-surface: #ffffff;
+  --color-surface-alt: #f9fafb;
+  --color-surface-elevated: #f3f4f6;
+  --color-control-secondary: #e5e7eb;
+  --color-border: #e5e7eb;
+  --color-border-subtle: #f3f4f6;
+  --color-border-strong: #d1d5db;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-text-subtle: #9ca3af;
+  --color-text-strong: #111827;
+  --color-text-secondary: #374151;
+  --color-inverse-surface: #1f2937;
+  --color-inverse-text: #d1d5db;
+
+  /* Glucosa y gráficas */
+  --color-glucose-low: #ef4444;
+  --color-glucose-normal: #10b981;
+  --color-glucose-high: #f59e0b;
+  --color-glucose-chart-line: #2563eb;
+  --color-glucose-safe-fill: #10b981;
+  --color-zone-safe-accent: #059669;
+  --color-zone-safe-subtle: #ecfdf5;
+  --color-zone-safe-border: #d1fae5;
+  --color-zone-safe-dot: #34d399;
+
+  /* Estados (peligro, éxito, advertencia) */
+  --color-danger-subtle: #fef2f2;
+  --color-danger-border-soft: #fecaca;
+  --color-danger-border: #f87171;
+  --color-danger-text: #b91c1c;
+  --color-danger-strong: #ef4444;
+  --color-danger-hover-text: #b91c1c;
+  --color-success-subtle: #dcfce7;
+  --color-success-border: #4ade80;
+  --color-success-text: #15803d;
+  --color-warning-surface: #fffbeb;
+  --color-warning-text: #92400e;
+  --color-warning-muted: #fbbf24;
+  --color-warning-strong: #b45309;
+
+  /* CTA y controles */
+  --color-cta-strong: #000000;
+  --color-cta-strong-hover: #1f2937;
+  --color-on-primary: #ffffff;
+  --color-disabled-strong: #9ca3af;
+  --color-disabled-soft: #60a5fa;
+
+  /* Overlays */
+  --color-overlay: rgb(0 0 0 / 0.5);
+  --color-overlay-sidebar: rgb(0 0 0 / 0.4);
+
+  /* Recharts (var() en GlucoseChart) */
+  --color-chart-grid: #f3f4f6;
+  --color-chart-tick: #9ca3af;
+  --color-chart-cursor: #e5e7eb;
+
+  /* Tipografía y tamaños de texto */
+  --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji";
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* Radios de borde (basados en los valores por defecto de Tailwind) */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+
+  /* Sombras y elevación */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-card: 0 1px 4px rgb(0 0 0 / 0.08);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@layer components {
+  .animate-fade-in {
+    animation: fade-in 0.2s ease-out;
+  }
+  .animate-slide-up {
+    animation: slide-up 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+  }
+}
+
+@layer utilities {
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: var(--color-border-strong);
+    border-radius: var(--radius-sm);
+  }
+
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Flechas de inputs numéricos siempre visibles */
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: auto;
+  opacity: 1;
+}

@@ -8,13 +8,24 @@ import Settings from '../pages/Settings';
 import { History } from '../pages/History';
 import { MainLayout } from '../components/layout/MainLayout';
 import VerifyEmail from '../pages/VerifyEmail';
+import { IconSpinner } from '../components/icons/Icons';
 
+/**
+ * AppRouter — Definición de rutas y protección por autenticación
+ *
+ * Rutas públicas (login, register, verify-email) redirigen si ya hay sesión.
+ * Dashboard e history requieren MainLayout y token válido.
+ */
 export const AppRouter = () => {
     
   const { isAuthenticated, isLoading } = useContext(AuthContext);
 
   if (isLoading) {
-    return <div className="min-h-screen flex items-center justify-center">Cargando Glucode...</div>;
+    return (
+      <div className="min-h-screen bg-surface flex items-center justify-center">
+        <IconSpinner className="w-10 h-10 text-primary" />
+      </div>
+    );
   }
 
   return (

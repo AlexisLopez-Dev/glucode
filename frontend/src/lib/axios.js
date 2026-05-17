@@ -1,6 +1,11 @@
 import Axios from 'axios';
 import { API_BASE_URL } from '../config';
 
+/**
+ * Cliente HTTP de la API — instancia Axios con baseURL y Bearer token
+ *
+ * Añade automáticamente Authorization desde localStorage (auth_token) en cada petición.
+ */
 const axios = Axios.create({
     baseURL: API_BASE_URL,
     headers: {
