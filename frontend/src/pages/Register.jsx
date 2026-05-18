@@ -5,6 +5,7 @@ import axios from '../lib/axios';
 import { DisclaimerModal } from '../components/modals/DisclaimerModal';
 import { IconSimulator, IconWarning } from '../components/icons/Icons';
 import { Logo } from '../components/common/Logo';
+import { GoogleAuthButton } from '../components/auth/GoogleAuthButton';
 
 /**
  * Register — Alta de usuario nueva
@@ -96,6 +97,27 @@ export default function Register() {
                 {serverError}
               </div>
             )}
+
+            <div className="mb-6">
+              <GoogleAuthButton label="Registrarse con Google" />
+              <p className="text-xs text-text-muted text-center mt-2">
+                Al continuar con Google, aceptas el{' '}
+                <button
+                  type="button"
+                  onClick={() => setShowDisclaimer(true)}
+                  className="underline text-primary hover:text-primary-darker"
+                >
+                  Aviso Médico
+                </button>
+                .
+              </p>
+            </div>
+
+            <div className="flex items-center gap-3 mb-6">
+              <span className="flex-1 h-px bg-border" />
+              <span className="text-xs text-text-muted">o regístrate con email</span>
+              <span className="flex-1 h-px bg-border" />
+            </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
 

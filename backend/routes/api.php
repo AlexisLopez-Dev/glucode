@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MedicalSettingController;
 use App\Http\Controllers\SimulationController;
+use App\Http\Controllers\SocialAuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -12,6 +13,10 @@ Route::get('/ping', function () {
         'message' => '¡Hola desde el Backend de Glucode! (Ahora, con auto-deploy funcionando)',
     ]);
 });
+
+// Google OAuth — stateless, sin sesiones web
+Route::get('/auth/google/redirect', [SocialAuthController::class, 'redirectToGoogle']);
+Route::get('/auth/google/callback', [SocialAuthController::class, 'handleGoogleCallback']);
 
 // Rutas públicas de autenticación
 Route::post('/register', [AuthController::class, 'register']);

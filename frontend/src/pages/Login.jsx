@@ -1,10 +1,11 @@
 import { useContext, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from '../lib/axios';
 import { AuthContext } from '../context/AuthContext';
 import { IconSimulator, IconWarning } from '../components/icons/Icons';
 import { Logo } from '../components/common/Logo';
+import { GoogleAuthButton } from '../components/auth/GoogleAuthButton';
 
 /**
  * Login — Inicio de sesión con email y contraseña
@@ -14,8 +15,14 @@ import { Logo } from '../components/common/Logo';
  */
 export default function Login() {
   const { login } = useContext(AuthContext);
-  const [serverError, setServerError] = useState('');
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const initialError = searchParams.get('error') === 'google_auth_failed'
+    ? 'No se pudo iniciar sesión con Google. Inténtalo de nuevo.'
+    : '';
+
+  const [serverError, setServerError] = useState(initialError);
 
   const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm();
 
@@ -144,6 +151,14 @@ export default function Login() {
             >
               {isSubmitting ? 'Iniciando sesión...' : 'Entrar'}
             </button>
+
+            <div className="flex items-center gap-3 my-1">
+              <span className="flex-1 h-px bg-border" />
+              <span className="text-xs text-text-muted">o</span>
+              <span className="flex-1 h-px bg-border" />
+            </div>
+
+            <GoogleAuthButton />
           </form>
         </div>
       </div>
