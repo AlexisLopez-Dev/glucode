@@ -8,6 +8,7 @@ import Settings from '../pages/Settings';
 import { History } from '../pages/History';
 import { MainLayout } from '../components/layout/MainLayout';
 import VerifyEmail from '../pages/VerifyEmail';
+import GoogleCallback from '../pages/GoogleCallback';
 import { IconSpinner } from '../components/icons/Icons';
 
 /**
@@ -46,6 +47,8 @@ export const AppRouter = () => {
           path="/verify-email" 
           element={isAuthenticated ? <Navigate to="/dashboard" /> : <VerifyEmail />} 
         />
+
+        <Route path="/auth/google/callback" element={<GoogleCallback />} />
         
         <Route 
           path="/settings" 
