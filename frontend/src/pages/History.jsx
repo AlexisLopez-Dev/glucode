@@ -66,7 +66,7 @@ export const History = () => {
     );
 
     return (
-        <div className="p-4 md:p-6 lg:p-8 md:flex-1 md:flex md:flex-col md:min-h-0 md:overflow-y-auto">
+        <div className="px-4 pt-4 md:p-6 lg:p-8 md:flex-1 md:flex md:flex-col md:min-h-0 md:overflow-y-auto">
             <div className="flex flex-col md:flex-1 md:min-h-0 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto">
                 <header className="mb-4 md:mb-6 shrink-0">
                     <h2 className="text-lg md:text-2xl font-bold text-text">Tu Historial</h2>
@@ -108,7 +108,7 @@ export const History = () => {
                 </div>
 
                 {!isLoading && totalPages > 1 && (
-                    <div className="shrink-0 flex items-center justify-center gap-3 pt-5 mt-1 border-t border-border">
+                    <div className="shrink-0 flex items-center justify-center gap-3 pt-5 mt-1 border-t border-border max-md:pb-4">
                         <button
                             onClick={() => setCurrentPage((prev) => prev - 1)}
                             disabled={currentPage === 1}
