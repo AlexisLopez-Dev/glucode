@@ -144,6 +144,25 @@
   }
 }
 
+/* GlucoseChart — sin cursor ni outlines al interactuar (Recharts v3) */
+.glucose-chart {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.glucose-chart .recharts-tooltip-cursor {
+  display: none !important;
+}
+
+.glucose-chart .recharts-reference-area-rect {
+  stroke: none !important;
+  pointer-events: none;
+}
+
+.glucose-chart *:focus,
+.glucose-chart *:focus-visible {
+  outline: none !important;
+}
+
 /* Flechas de inputs numéricos siempre visibles */
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {

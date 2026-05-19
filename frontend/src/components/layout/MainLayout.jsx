@@ -35,9 +35,11 @@ export const MainLayout = () => {
       </div>
 
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300 relative">
-        <main className="flex-1 overflow-y-auto pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))]">
+        <main className="flex-1 flex flex-col min-h-0 overflow-y-auto pb-[calc(3.5rem+env(safe-area-inset-bottom,0px))] md:pb-0">
           <Topbar />
-          <Outlet />
+          <div className="flex-1 flex flex-col min-h-0">
+            <Outlet />
+          </div>
         </main>
       </div>
 

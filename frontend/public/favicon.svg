@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Glucode">
+  <style>
+    text { fill: #ffffff; }
+    circle { fill: #93c5fd; }
+    @media (prefers-color-scheme: light) {
+      text { fill: #0f172a; }
+      circle { fill: #2563eb; }
+    }
+  </style>
+  <g transform="translate(16 16) scale(1.18) translate(-13.55 -18.2)">
+    <text
+      x="0"
+      y="27.5"
+      font-family="ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+      font-size="28"
+      font-weight="900"
+      letter-spacing="-0.06em"
+    >G</text>
+    <circle cx="23.75" cy="24.15" r="3.35"/>
+  </g>
+</svg>
