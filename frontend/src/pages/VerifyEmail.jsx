@@ -82,8 +82,8 @@ export default function VerifyEmail() {
     try {
       const response = await axios.post('/email/verify', { email, code });
       sessionStorage.removeItem('pending_verification_email');
-      await login(response.data.access_token);
-      navigate('/settings');
+      const hasSettings = await login(response.data.access_token);
+      navigate(hasSettings ? '/dashboard' : '/settings');
     } catch (err) {
       setServerError(err.response?.data?.message || 'Código incorrecto o expirado.');
       setDigits(['', '', '', '', '', '']);

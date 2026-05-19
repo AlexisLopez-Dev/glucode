@@ -16,12 +16,12 @@ export default function GoogleCallback() {
   const navigate = useNavigate();
   const processed = useRef(false);
 
+  const token = searchParams.get('token');
+  const error = searchParams.get('error');
+
   useEffect(() => {
     if (processed.current) return;
     processed.current = true;
-
-    const token = searchParams.get('token');
-    const error = searchParams.get('error');
 
     if (error || !token) {
       navigate('/login?error=google_auth_failed', { replace: true });
@@ -29,9 +29,9 @@ export default function GoogleCallback() {
     }
 
     login(token)
-      .then(() => navigate('/dashboard', { replace: true }))
+      .then((hasSettings) => navigate(hasSettings ? '/dashboard' : '/settings', { replace: true }))
       .catch(() => navigate('/login?error=google_auth_failed', { replace: true }));
-  }, []);
+  }, [token, error, login, navigate]);
 
   return (
     <div className="min-h-screen bg-surface flex flex-col items-center justify-center gap-4">

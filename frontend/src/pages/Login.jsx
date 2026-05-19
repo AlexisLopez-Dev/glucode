@@ -30,8 +30,8 @@ export default function Login() {
     setServerError('');
     try {
       const response = await axios.post('/login', data);
-      await login(response.data.access_token);
-      navigate('/dashboard');
+      const hasSettings = await login(response.data.access_token);
+      navigate(hasSettings ? '/dashboard' : '/settings');
     } catch (err) {
       console.error(err);
       if (err.response?.data?.requires_verification) {
