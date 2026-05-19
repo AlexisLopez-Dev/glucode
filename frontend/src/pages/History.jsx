@@ -4,19 +4,23 @@ import { SimulationCard } from '../components/simulations/SimulationCard';
 import { IconHistory } from '../components/icons/Icons';
 
 /**
- * History — Listado de simulaciones guardadas del usuario
+ * History — Listado de simulaciones guardadas del usuario, paginadas de 10 en 10.
  *
  * Carga GET /simulations y delega el borrado en SimulationCard (DELETE /simulations/:id).
  */
 export const History = () => {
     const [simulations, setSimulations] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
 
     useEffect(() => {
         const fetchHistory = async () => {
+            setIsLoading(true);
             try {
-                const response = await axios.get('/simulations');
+                const response = await axios.get('/simulations?page=' + currentPage);
                 setSimulations(response.data.data);
+                setTotalPages(response.data.last_page);
             } catch (error) {
                 console.error('Error al cargar el historial:', error);
             } finally {
@@ -25,12 +29,18 @@ export const History = () => {
         };
 
         fetchHistory();
-    }, []);
+    }, [currentPage]);
 
     const handleDeleteSimulation = async (id) => {
         try {
             await axios.delete(`/simulations/${id}`);
-            setSimulations(simulations.filter((sim) => sim.id !== id));
+            const remaining = simulations.filter((sim) => sim.id !== id);
+            // Si borramos el último elemento de una página > 1, retrocedemos
+            if (remaining.length === 0 && currentPage > 1) {
+                setCurrentPage((prev) => prev - 1);
+            } else {
+                setSimulations(remaining);
+            }
         } catch (error) {
             console.error('Error al eliminar la simulación:', error);
             alert('Hubo un error al eliminar la simulación.');
@@ -96,6 +106,31 @@ export const History = () => {
                             </div>
                         )}
                 </div>
+
+                {!isLoading && totalPages > 1 && (
+                    <div className="shrink-0 flex items-center justify-center gap-3 pt-5 mt-1 border-t border-border">
+                        <button
+                            onClick={() => setCurrentPage((prev) => prev - 1)}
+                            disabled={currentPage === 1}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-border bg-surface text-text-secondary shadow-sm transition-colors duration-150 hover:bg-surface-elevated hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface disabled:hover:border-border"
+                        >
+                            ← Anterior
+                        </button>
+
+                        <span className="text-sm font-medium text-text-muted tabular-nums select-none">
+                            Página <span className="text-text font-semibold">{currentPage}</span> de{' '}
+                            <span className="text-text font-semibold">{totalPages}</span>
+                        </span>
+
+                        <button
+                            onClick={() => setCurrentPage((prev) => prev + 1)}
+                            disabled={currentPage === totalPages}
+                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-border bg-surface text-text-secondary shadow-sm transition-colors duration-150 hover:bg-surface-elevated hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface disabled:hover:border-border"
+                        >
+                            Siguiente →
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
