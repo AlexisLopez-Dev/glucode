@@ -21,7 +21,7 @@ export const Sidebar = ({ isOpen, closeSidebar, toggleSidebar }) => {
 
       <aside
         className={`flex flex-col h-full bg-dark-surface transition-[width] duration-300 ease-in-out overflow-hidden shrink-0
-          ${isOpen ? 'w-[200px]' : 'w-12'}`}
+          ${isOpen ? 'w-[200px]' : 'w-14'}`}
         data-open={isOpen}
       >
         <div className="h-16 flex items-center justify-center border-b border-dark-surface-alt shrink-0">
@@ -46,16 +46,16 @@ export const Sidebar = ({ isOpen, closeSidebar, toggleSidebar }) => {
                 to={item.to}
                 title={item.label}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 rounded-lg overflow-hidden min-h-11 py-2.5 transition-all duration-150 ease-out relative border-l-[3px]
-                   ${isOpen ? 'justify-start pl-[13px] pr-3' : 'justify-center px-0'}
+                  `flex items-center rounded-lg overflow-hidden transition-all duration-150 ease-out
+                   ${isOpen ? 'gap-3 min-h-11 py-2 px-3' : 'justify-center py-2'}
                    ${isActive
-                     ? 'border-l-primary bg-dark-surface-alt text-dark-text'
-                     : 'border-transparent text-dark-text-muted hover:bg-dark-surface-alt'
+                     ? 'bg-dark-surface-alt text-dark-text'
+                     : 'text-dark-text-muted hover:bg-dark-surface-alt'
                    }`
                 }
               >
-                <span className="shrink-0 flex items-center justify-center w-5 h-5">
-                  <item.Icon className="w-5 h-5" />
+                <span className="shrink-0 size-9 flex items-center justify-center">
+                  <item.Icon className="size-5" />
                 </span>
                 <span
                   className={`font-semibold text-sm whitespace-nowrap transition-opacity duration-200 overflow-hidden
