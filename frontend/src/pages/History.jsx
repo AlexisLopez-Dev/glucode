@@ -47,6 +47,35 @@ export const History = () => {
         }
     };
 
+    const PaginationControls = ({ className = '' }) => (
+        <div
+            className={`flex items-center justify-center gap-3 pt-0 md:pt-5 md:border-t md:border-border ${className}`}
+        >
+            <button
+                onClick={() => setCurrentPage((prev) => prev - 1)}
+                disabled={currentPage === 1}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-border bg-surface text-text-secondary shadow-sm transition-colors duration-150 hover:bg-surface-elevated hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface disabled:hover:border-border"
+            >
+                ← Anterior
+            </button>
+
+            <span className="text-sm font-medium text-text-muted tabular-nums select-none">
+                Página <span className="text-text font-semibold">{currentPage}</span> de{' '}
+                <span className="text-text font-semibold">{totalPages}</span>
+            </span>
+
+            <button
+                onClick={() => setCurrentPage((prev) => prev + 1)}
+                disabled={currentPage === totalPages}
+                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-border bg-surface text-text-secondary shadow-sm transition-colors duration-150 hover:bg-surface-elevated hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface disabled:hover:border-border"
+            >
+                Siguiente →
+            </button>
+        </div>
+    );
+
+    const showPagination = !isLoading && totalPages > 1;
+
     const SkeletonCard = () => (
         <div className="rounded-2xl border bg-surface border-border shadow-card w-full min-h-[72px] px-5 py-4 flex flex-col xl:flex-row items-center justify-between gap-4 animate-pulse">
             <div className="flex items-center gap-4 w-full xl:w-auto">
@@ -65,9 +94,37 @@ export const History = () => {
         </div>
     );
 
+    const listContent = isLoading ? (
+        <div className="flex flex-col gap-4">
+            <SkeletonCard />
+            <SkeletonCard />
+            <SkeletonCard />
+        </div>
+    ) : simulations.length === 0 ? (
+        <div className="flex flex-col items-center justify-center text-center gap-3 min-h-[280px] md:min-h-full py-12">
+            <IconHistory className="w-8 h-8 text-text-subtle" />
+            <div>
+                <h3 className="text-lg md:text-xl font-bold text-text">Aún no hay simulaciones</h3>
+                <p className="font-medium text-sm md:text-base text-text-subtle mt-1">
+                    Ve al panel principal y genera tu primera curva glucémica.
+                </p>
+            </div>
+        </div>
+    ) : (
+        <div className="flex flex-col gap-4">
+            {simulations.map((sim) => (
+                <SimulationCard
+                    key={sim.id}
+                    simulation={sim}
+                    onDelete={() => handleDeleteSimulation(sim.id)}
+                />
+            ))}
+        </div>
+    );
+
     return (
-        <div className="px-4 pt-4 md:p-6 lg:p-8 md:flex-1 md:flex md:flex-col md:min-h-0 md:overflow-y-auto">
-            <div className="flex flex-col md:flex-1 md:min-h-0 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto">
+        <div className="px-4 pt-4 flex flex-1 flex-col min-h-0 md:p-6 lg:p-8 md:overflow-y-auto">
+            <div className="flex flex-1 flex-col min-h-0 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto">
                 <header className="mb-4 md:mb-6 shrink-0">
                     <h2 className="text-lg md:text-2xl font-bold text-text">Tu Historial</h2>
                     <p className="font-medium text-xs md:text-sm text-text-subtle">
@@ -75,62 +132,19 @@ export const History = () => {
                     </p>
                 </header>
 
-                <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar md:flex-1">
-                    {isLoading ? (
-                            <div className="flex flex-col gap-4">
-                                <SkeletonCard />
-                                <SkeletonCard />
-                                <SkeletonCard />
-                            </div>
-                        ) : simulations.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center text-center gap-3 min-h-[280px] md:min-h-full py-12">
-                                <IconHistory className="w-8 h-8 text-text-subtle" />
-                                <div>
-                                    <h3 className="text-lg md:text-xl font-bold text-text">
-                                        Aún no hay simulaciones
-                                    </h3>
-                                    <p className="font-medium text-sm md:text-base text-text-subtle mt-1">
-                                        Ve al panel principal y genera tu primera curva glucémica.
-                                    </p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className="flex flex-col gap-4">
-                                {simulations.map((sim) => (
-                                    <SimulationCard
-                                        key={sim.id}
-                                        simulation={sim}
-                                        onDelete={() => handleDeleteSimulation(sim.id)}
-                                    />
-                                ))}
-                            </div>
-                        )}
+                <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar md:hidden">
+                    {listContent}
+                    {showPagination && (
+                        <PaginationControls className="my-4 pb-[env(safe-area-inset-bottom,0px)] md:my-0 md:mt-1 md:pb-0" />
+                    )}
                 </div>
 
-                {!isLoading && totalPages > 1 && (
-                    <div className="shrink-0 flex items-center justify-center gap-3 pt-5 mt-1 border-t border-border max-md:pb-4">
-                        <button
-                            onClick={() => setCurrentPage((prev) => prev - 1)}
-                            disabled={currentPage === 1}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-border bg-surface text-text-secondary shadow-sm transition-colors duration-150 hover:bg-surface-elevated hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface disabled:hover:border-border"
-                        >
-                            ← Anterior
-                        </button>
-
-                        <span className="text-sm font-medium text-text-muted tabular-nums select-none">
-                            Página <span className="text-text font-semibold">{currentPage}</span> de{' '}
-                            <span className="text-text font-semibold">{totalPages}</span>
-                        </span>
-
-                        <button
-                            onClick={() => setCurrentPage((prev) => prev + 1)}
-                            disabled={currentPage === totalPages}
-                            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-semibold border border-border bg-surface text-text-secondary shadow-sm transition-colors duration-150 hover:bg-surface-elevated hover:border-border-strong disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-surface disabled:hover:border-border"
-                        >
-                            Siguiente →
-                        </button>
+                <div className="hidden md:flex md:flex-1 md:flex-col md:min-h-0">
+                    <div className="flex-1 min-h-0 overflow-y-auto custom-scrollbar">
+                        {listContent}
                     </div>
-                )}
+                    {showPagination && <PaginationControls className="shrink-0 mt-1" />}
+                </div>
             </div>
         </div>
     );
