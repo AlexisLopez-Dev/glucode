@@ -34,7 +34,7 @@ export const Dashboard = () => {
   };
 
   return (
-    <div className="p-4 md:p-6 lg:p-8 md:flex-1 md:flex md:flex-col md:min-h-0 md:overflow-y-auto">
+    <div className="px-4 pt-4 pb-[calc(3.5rem+env(safe-area-inset-bottom,0px)+1.25rem)] md:p-6 lg:p-8 md:flex-1 md:flex md:flex-col md:min-h-0 md:overflow-y-auto">
       <div className="flex flex-col md:flex-row gap-4 md:gap-6 lg:gap-8 md:flex-1 md:min-h-0 w-full max-w-[1600px] 2xl:max-w-[1760px] mx-auto">
 
         <div className="md:flex-1 min-w-0 min-h-[420px] md:min-h-0 md:h-full border rounded-2xl bg-surface border-border shadow-card p-5 md:p-6 flex flex-col">

@@ -45,8 +45,8 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = f
         {!compact && (
           <div className="flex justify-between items-center mb-6 md:mb-8">
               <div>
-                  <h3 className="text-lg md:text-2xl font-bold text-text">
-                      Proyección Glucémica
+                  <h3 className="text-xl font-bold mb-0.5 text-text-strong">
+                      Proyección glucémica
                   </h3>
                   <p className="font-medium text-xs md:text-sm text-text-subtle">
                       Evolución estimada en 4 horas

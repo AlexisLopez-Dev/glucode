@@ -29,7 +29,7 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
                     <h3 className="text-xl font-bold mb-0.5 text-text-strong">
                         Parámetros
                     </h3>
-                    <p className="text-xs font-medium text-text-muted">
+                    <p className="font-medium text-xs md:text-sm text-text-subtle">
                         Ajusta los valores para simular
                     </p>
                 </div>
