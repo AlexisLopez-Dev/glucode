@@ -22,21 +22,21 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
             : 'border-border-strong focus:border-primary text-text'}`;
 
     return (
-        <div className="border-y md:border p-5 md:p-6 flex flex-col h-full bg-surface border-border rounded-2xl">
+        <div className="border-y md:border p-5 md:p-6 flex flex-col h-full md:min-h-0 md:overflow-y-auto bg-surface border-border rounded-2xl">
             {/* Cabecera del panel */}
             <div className="flex justify-between items-start mb-5">
                 <div>
                     <h3 className="text-xl font-bold mb-0.5 text-text-strong">
                         Parámetros
                     </h3>
-                    <p className="text-xs font-medium text-text-muted">
+                    <p className="font-medium text-xs md:text-sm text-text-subtle">
                         Ajusta los valores para simular
                     </p>
                 </div>
                 <Link
                     to="/settings"
                     className="flex items-center justify-center rounded-lg transition-all duration-150
-                               text-text-subtle hover:text-primary hover:bg-primary-subtle touch-target"
+                               text-text-strong hover:bg-primary-subtle hover:text-primary touch-target"
                 >
                     <IconSettings className="w-5 h-5" />
                 </Link>
@@ -48,7 +48,7 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
                 onSubmit={handleSubmit(onSimulate)}
                 className="space-y-4 flex-1 flex flex-col"
             >
-                <div className="space-y-4 flex-1">
+                <div className="space-y-4">
 
                     {/* Glucosa actual */}
                     <div className={inputBlockClass}>
@@ -116,7 +116,7 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
                 </div>
 
                 {/* Botón de simulación */}
-                <div className="pt-5">
+                <div className="pt-5 md:mt-auto">
                     <button
                         id={`${formId}-submit-btn`}
                         type="submit"

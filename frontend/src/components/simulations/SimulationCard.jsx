@@ -116,10 +116,10 @@ export const SimulationCard = ({ simulation, onDelete }) => {
 
             <div
                 className={`transition-all duration-500 ease-in-out origin-top overflow-hidden
-                  ${isOpen ? 'max-h-[600px] opacity-100 border-t border-border-subtle' : 'max-h-0 opacity-0'}`}
+                  ${isOpen ? 'max-h-[min(90vh,1100px)] opacity-100 border-t border-border-subtle' : 'max-h-0 opacity-0'}`}
             >
-                <div className="p-4 sm:p-6 bg-surface-alt/50">
-                    <div className="h-[250px] sm:h-[300px] w-full p-4 rounded-xl border bg-surface border-border shadow-inner">
+                <div className="p-5 md:p-6 bg-surface-alt/30">
+                    <div className="w-full min-h-[220px] h-[250px] sm:h-[300px] md:h-[min(32vw,420px)] lg:h-[min(28vw,480px)] xl:h-[min(26vw,520px)] 2xl:h-[min(24vw,560px)]">
                         {isOpen && (
                             <GlucoseChart chartData={chartData} isSimulating={false} compact={true} />
                         )}

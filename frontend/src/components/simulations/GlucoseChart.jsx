@@ -14,7 +14,7 @@ const CustomTooltip = ({ active, payload, label }) => {
         const valueClass = getGlucoseValueClass(glucoseValue);
 
         return (
-            <div className="p-4 rounded-2xl z-50 bg-surface border border-border-subtle shadow-xl">
+            <div className="p-3 md:p-4 rounded-2xl z-50 bg-surface border border-border-subtle shadow-xl pointer-events-none">
                 <p className="text-sm font-bold mb-1 text-text-muted">
                     Minuto {label}
                 </p>
@@ -41,12 +41,12 @@ const CustomTooltip = ({ active, payload, label }) => {
  */
 export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = false }) => {
   return (
-    <div className="relative overflow-hidden w-full h-full flex flex-col">
+    <div className="glucose-chart relative overflow-hidden w-full h-full flex flex-col">
         {!compact && (
           <div className="flex justify-between items-center mb-6 md:mb-8">
               <div>
-                  <h3 className="text-lg md:text-2xl font-bold text-text">
-                      Proyección Glucémica
+                  <h3 className="text-xl font-bold mb-0.5 text-text-strong">
+                      Proyección glucémica
                   </h3>
                   <p className="font-medium text-xs md:text-sm text-text-subtle">
                       Evolución estimada en 4 horas
@@ -67,7 +67,7 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = f
             </div>
         )}
 
-        <div className={`flex-1 w-full relative ${compact ? 'min-h-[200px]' : 'min-h-[240px] md:min-h-[300px] mt-4'}`}>
+        <div className={`flex-1 w-full relative min-h-0 ${compact ? 'min-h-[200px]' : 'min-h-[240px] md:min-h-0 mt-4'}`}>
 
             {chartData.length === 0 ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center gap-3">
@@ -89,6 +89,7 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = f
                     <ResponsiveContainer width="100%" height="100%" initialDimension={{ width: 400, height: 300 }}>
                         <LineChart
                             data={chartData}
+                            accessibilityLayer={false}
                             margin={compact
                                 ? { top: 10, right: 0, left: -25, bottom: 0 }
                                 : { top: 20, right: 10, left: -25, bottom: 0 }
@@ -109,18 +110,26 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = f
                                 tickLine={false}
                                 axisLine={false}
                             />
-                            <Tooltip
-                                content={<CustomTooltip />}
-                                cursor={{ stroke: 'var(--color-chart-cursor)', strokeWidth: 2, strokeDasharray: '5 5' }}
+                            <Tooltip content={<CustomTooltip />} cursor={false} />
+                            <ReferenceArea
+                                y1={70}
+                                y2={180}
+                                fill="var(--color-glucose-safe-fill)"
+                                fillOpacity={0.06}
                             />
-                            <ReferenceArea y1={70} y2={180} fill="var(--color-glucose-safe-fill)" fillOpacity={0.06} />
                             <Line
                                 type="monotone"
                                 dataKey="glucose_value"
                                 stroke="var(--color-glucose-chart-line)"
                                 strokeWidth={4}
                                 dot={false}
-                                activeDot={{ r: 6, strokeWidth: 3, stroke: 'white', fill: 'var(--color-glucose-chart-line)' }}
+                                activeDot={{
+                                    r: 6,
+                                    strokeWidth: 3,
+                                    stroke: 'white',
+                                    fill: 'var(--color-glucose-chart-line)',
+                                    style: { pointerEvents: 'none' },
+                                }}
                                 animationDuration={1500}
                             />
                         </LineChart>

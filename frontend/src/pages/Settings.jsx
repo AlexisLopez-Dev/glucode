@@ -8,7 +8,7 @@ import { IconArrowRight, IconSpinner, IconSimulator } from '../components/icons/
 import { Logo } from '../components/common/Logo';
 
 /**
- * SettingsForm — Formulario de parámetros clínicos.
+ * SettingsForm — Formulario de parámetros médicos.
  *
  * Componente separado a nivel de módulo (fuera de Settings) para que React
  * mantenga una referencia estable entre renders. Definirlo dentro de Settings
@@ -30,7 +30,7 @@ function SettingsForm({ register, handleSubmit, onSubmit, errors, isSubmitting, 
                 </button>
             )}
 
-            <h2 className="text-2xl font-bold text-text-strong mb-1">Parámetros Clínicos</h2>
+            <h2 className="text-2xl font-bold text-text-strong mb-1">Parámetros Médicos</h2>
             <p className="text-text-muted text-sm mb-6">
                 {isOnboarding
                     ? 'Antes de usar el simulador, configura tus factores metabólicos.'
@@ -257,7 +257,7 @@ export default function Settings() {
                     </div>
 
                     <h3 className="text-dark-text font-bold text-xl mt-2">
-                        Parámetros Clínicos
+                        Parámetros Médicos
                     </h3>
                     <p className="text-dark-text-muted text-sm text-center max-w-xs leading-relaxed">
                         Define tus factores para que el simulador se adapte a tu perfil metabólico.
