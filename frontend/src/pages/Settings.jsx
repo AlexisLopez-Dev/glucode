@@ -143,9 +143,7 @@ function SettingsForm({ register, handleSubmit, onSubmit, errors, isSubmitting, 
  * En montaje, hace GET /medical-settings para pre-rellenar valores existentes.
  * Tras guardar, redirige al dashboard.
  *
- * Diseño:
- *  Desktop — split 50/50 (panel oscuro derecho con marca, panel claro izquierdo con form)
- *  Mobile  — cabecera oscura compacta + formulario de ancho completo
+ * Diseño responsive con un solo formulario en el DOM (móvil + escritorio comparten el mismo SettingsForm).
  */
 export default function Settings() {
     const { hasMedicalSettings, refreshMedicalSettings } = useContext(AuthContext);
@@ -217,88 +215,55 @@ export default function Settings() {
     }
 
     return (
-        <>
-            {/* MOBIL — Una sola columna */}
-            <div className="flex flex-col min-h-screen bg-surface md:hidden">
+        <div className="min-h-screen flex flex-col md:flex-row bg-surface">
+            <div className="h-16 flex md:hidden items-center justify-center bg-dark-surface shrink-0">
+                <div className="flex items-center gap-2 text-dark-text">
+                    <Logo variant="full" theme="dark" size="lg" />
+                </div>
+            </div>
 
-                {/* Encabezado oscuro compacto */}
-                <div className="h-16 flex items-center justify-center bg-dark-surface shrink-0">
+            <div className="flex-1 flex flex-col overflow-y-auto">
+                <div className="flex-1 flex items-center justify-center p-6 md:p-12">
+                    <div className="w-full max-w-sm">
+                        <SettingsForm
+                            register={register}
+                            handleSubmit={handleSubmit}
+                            onSubmit={onSubmit}
+                            errors={errors}
+                            isSubmitting={isSubmitting}
+                            loadError={loadError}
+                            serverError={serverError}
+                            navigate={navigate}
+                            showBackButton={hasMedicalSettings}
+                            isOnboarding={isOnboarding}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div className="hidden md:flex w-1/2 flex-col bg-dark-surface p-10 shrink-0">
+                <div className="mb-auto">
                     <div className="flex items-center gap-2 text-dark-text">
                         <Logo variant="full" theme="dark" size="lg" />
                     </div>
                 </div>
 
-                {/* Area del formulario */}
-                <div className="flex-1 p-6 overflow-y-auto">
-                    <SettingsForm
-                        register={register}
-                        handleSubmit={handleSubmit}
-                        onSubmit={onSubmit}
-                        errors={errors}
-                        isSubmitting={isSubmitting}
-                        loadError={loadError}
-                        serverError={serverError}
-                        navigate={navigate}
-                        showBackButton={hasMedicalSettings}
-                        isOnboarding={isOnboarding}
-                    />
+                <div className="flex flex-col items-center justify-center flex-1 gap-6">
+                    <div
+                        className="flex items-center justify-center bg-dark-surface-alt rounded-2xl p-6"
+                        style={{ boxShadow: '0 0 32px 4px rgba(37, 99, 235, 0.35)' }}
+                    >
+                        <IconSimulator className="w-20 h-20 text-primary" />
+                    </div>
+
+                    <h3 className="text-dark-text font-bold text-xl mt-2">
+                        Parámetros Clínicos
+                    </h3>
+                    <p className="text-dark-text-muted text-sm text-center max-w-xs leading-relaxed">
+                        Define tus factores para que el simulador se adapte a tu perfil metabólico.
+                    </p>
                 </div>
             </div>
-
-            {/* ESCRITORIO — 50/50 split */}
-            <div className="hidden md:flex min-h-screen">
-
-                {/* Panel del formulario */}
-                <div className="flex-1 flex flex-col bg-surface overflow-y-auto">
-                    <div className="flex-1 flex items-center justify-center p-12">
-                        <div className="w-full max-w-sm">
-                            <SettingsForm
-                                register={register}
-                                handleSubmit={handleSubmit}
-                                onSubmit={onSubmit}
-                                errors={errors}
-                                isSubmitting={isSubmitting}
-                                loadError={loadError}
-                                serverError={serverError}
-                                navigate={navigate}
-                                showBackButton={hasMedicalSettings}
-                                isOnboarding={isOnboarding}
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* Panel de marca oscuro */}
-                <div className="w-1/2 flex flex-col bg-dark-surface p-10 shrink-0">
-
-                    {/* Logo */}
-                    <div className="mb-auto">
-                        <div className="flex items-center gap-2 text-dark-text">
-                            <Logo variant="full" theme="dark" size="lg" />
-                        </div>
-                    </div>
-
-                    {/* Contenido de marca */}
-                    <div className="flex flex-col items-center justify-center flex-1 gap-6">
-
-                        {/* Icono */}
-                        <div
-                            className="flex items-center justify-center bg-dark-surface-alt rounded-2xl p-6"
-                            style={{ boxShadow: '0 0 32px 4px rgba(37, 99, 235, 0.35)' }}
-                        >
-                            <IconSimulator className="w-20 h-20 text-primary" />
-                        </div>
-
-                        <h3 className="text-dark-text font-bold text-xl mt-2">
-                            Parámetros Clínicos
-                        </h3>
-                        <p className="text-dark-text-muted text-sm text-center max-w-xs leading-relaxed">
-                            Define tus factores para que el simulador se adapte a tu perfil metabólico.
-                        </p>
-                    </div>
-
-                </div>
-            </div>
-        </>
+        </div>
     );
 }
