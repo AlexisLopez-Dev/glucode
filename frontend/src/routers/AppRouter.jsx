@@ -9,6 +9,7 @@ import { History } from '../pages/History';
 import { MainLayout } from '../components/layout/MainLayout';
 import VerifyEmail from '../pages/VerifyEmail';
 import GoogleCallback from '../pages/GoogleCallback';
+import { RequireMedicalSettings } from '../components/auth/RequireMedicalSettings';
 import { IconSpinner } from '../components/icons/Icons';
 
 /**
@@ -19,7 +20,9 @@ import { IconSpinner } from '../components/icons/Icons';
  */
 export const AppRouter = () => {
     
-  const { isAuthenticated, isLoading } = useContext(AuthContext);
+  const { isAuthenticated, isLoading, hasMedicalSettings } = useContext(AuthContext);
+
+  const homePath = hasMedicalSettings ? '/dashboard' : '/settings';
 
   if (isLoading) {
     return (
@@ -35,17 +38,17 @@ export const AppRouter = () => {
 
         <Route 
           path="/login" 
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login />} 
+          element={isAuthenticated ? <Navigate to={homePath} replace /> : <Login />} 
         />
 
         <Route 
           path="/register" 
-          element={isAuthenticated ? <Navigate to="/settings" /> : <Register />} 
+          element={isAuthenticated ? <Navigate to={homePath} replace /> : <Register />} 
         />
 
         <Route 
           path="/verify-email" 
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <VerifyEmail />} 
+          element={isAuthenticated ? <Navigate to={homePath} replace /> : <VerifyEmail />} 
         />
 
         <Route path="/auth/google/callback" element={<GoogleCallback />} />
@@ -56,11 +59,13 @@ export const AppRouter = () => {
         />
 
         <Route element={isAuthenticated ? <MainLayout /> : <Navigate to="/login" />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/history" element={<History />} />
+          <Route element={<RequireMedicalSettings />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/history" element={<History />} />
+          </Route>
         </Route>
 
-        <Route path="/*" element={<Navigate to="/login" />} />
+        <Route path="/*" element={<Navigate to={isAuthenticated ? homePath : '/login'} replace />} />
 
       </Routes>
     </Router>

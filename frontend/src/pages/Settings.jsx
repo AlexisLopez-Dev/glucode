@@ -1,106 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import axios from '../lib/axios';
+import { AuthContext } from '../context/AuthContext';
 import { MadLibInput } from '../components/forms/MadLibInput';
 import { IconArrowRight, IconSpinner, IconSimulator } from '../components/icons/Icons';
 import { Logo } from '../components/common/Logo';
 
 /**
- * Settings — Configuración de parámetros médicos del usuario
+ * SettingsForm — Formulario de parámetros clínicos.
  *
- * Formulario tipo "mad lib" (ratio de carbos, corrección) enviado a POST /medical-settings.
- * En montaje, hace GET /medical-settings para pre-rellenar valores existentes.
- * Tras guardar, redirige al dashboard.
- *
- * Diseño:
- *  Desktop — split 50/50 (panel oscuro derecho con marca, panel claro izquierdo con form)
- *  Mobile  — cabecera oscura compacta + formulario de ancho completo
+ * Componente separado a nivel de módulo (fuera de Settings) para que React
+ * mantenga una referencia estable entre renders. Definirlo dentro de Settings
+ * causaba que el teclado virtual en móvil disparase un re-render que desmontaba
+ * el formulario y perdía los valores escritos antes de enviar.
  */
-export default function Settings() {
-    const [serverError, setServerError] = useState('');
-    const [isLoading, setIsLoading]     = useState(true);
-    const [loadError, setLoadError]     = useState('');
-    const navigate = useNavigate();
-
-    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
-
-    /* ── Cargar configuración existente ── */
-    useEffect(() => {
-        const fetchSettings = async () => {
-            try {
-                const response = await axios.get('/medical-settings');
-                const s = response.data?.data ?? response.data;
-                if (s && s.carb_ratio != null) {
-                    reset({
-                        carb_ratio:        s.carb_ratio,
-                        correction_start:  s.correction_start,
-                        correction_step:   s.correction_step,
-                        correction_units:  s.correction_units,
-                    });
-                }
-            } catch (err) {
-                // 404 = sin configuración aún → formulario vacío, sin error visible
-                if (err.response?.status !== 404) {
-                    setLoadError('No se pudo cargar la configuración actual.');
-                }
-            } finally {
-                setIsLoading(false);
-            }
-        };
-        fetchSettings();
-    }, [reset]);
-
-    /* Guardar configuración */
-    const onSubmit = async (data) => {
-        setServerError('');
-        try {
-            const payload = {
-                carb_ratio:        parseFloat(data.carb_ratio),
-                correction_start:  parseInt(data.correction_start),
-                correction_step:   parseInt(data.correction_step),
-                correction_units:  parseFloat(data.correction_units),
-            };
-            await axios.post('/medical-settings', payload);
-            navigate('/dashboard');
-        } catch (err) {
-            console.error(err);
-            if (err.response?.data?.errors) {
-                const [[primerError] = ['Revisa los datos introducidos']] = Object.values(err.response.data.errors);
-                setServerError(primerError);
-            } else {
-                setServerError('Error al guardar la configuración.');
-            }
-        }
-    };
-
-    /* Cargando */
-    if (isLoading) {
-        return (
-            <div className="min-h-screen bg-surface flex items-center justify-center">
-                <IconSpinner className="w-10 h-10 text-primary" />
-            </div>
-        );
-    }
-
-    /* Formulario */
-    const FormContent = () => (
+function SettingsForm({ register, handleSubmit, onSubmit, errors, isSubmitting, loadError, serverError, navigate, showBackButton, isOnboarding }) {
+    return (
         <>
-            {/* Botón de volver */}
-            <button
-                type="button"
-                onClick={() => navigate(-1)}
-                className="flex items-center gap-1 text-text-muted hover:text-text transition-colors duration-150 mb-6 text-sm font-medium"
-                aria-label="Volver atrás"
-            >
-                <IconArrowRight className="w-4 h-4 rotate-180" />
-                Volver
-            </button>
+            {showBackButton && (
+                <button
+                    type="button"
+                    onClick={() => navigate(-1)}
+                    className="flex items-center gap-1 text-text-muted hover:text-text transition-colors duration-150 mb-6 text-sm font-medium"
+                    aria-label="Volver atrás"
+                >
+                    <IconArrowRight className="w-4 h-4 rotate-180" />
+                    Volver
+                </button>
+            )}
 
-            {/* Cabecera */}
             <h2 className="text-2xl font-bold text-text-strong mb-1">Parámetros Clínicos</h2>
             <p className="text-text-muted text-sm mb-6">
-                Define tus factores para que el simulador se adapte a tu perfil metabólico.
+                {isOnboarding
+                    ? 'Antes de usar el simulador, configura tus factores metabólicos.'
+                    : 'Define tus factores para que el simulador se adapte a tu perfil metabólico.'}
             </p>
 
 
@@ -200,6 +134,87 @@ export default function Settings() {
             </form>
         </>
     );
+}
+
+/**
+ * Settings — Configuración de parámetros médicos del usuario
+ *
+ * Formulario tipo "mad lib" (ratio de carbos, corrección) enviado a POST /medical-settings.
+ * En montaje, hace GET /medical-settings para pre-rellenar valores existentes.
+ * Tras guardar, redirige al dashboard.
+ *
+ * Diseño:
+ *  Desktop — split 50/50 (panel oscuro derecho con marca, panel claro izquierdo con form)
+ *  Mobile  — cabecera oscura compacta + formulario de ancho completo
+ */
+export default function Settings() {
+    const { hasMedicalSettings, refreshMedicalSettings } = useContext(AuthContext);
+    const [serverError, setServerError] = useState('');
+    const [isLoading, setIsLoading]     = useState(true);
+    const [loadError, setLoadError]     = useState('');
+    const navigate = useNavigate();
+    const isOnboarding = !hasMedicalSettings;
+
+    const { register, handleSubmit, reset, formState: { errors, isSubmitting } } = useForm();
+
+    /* ── Cargar configuración existente ── */
+    useEffect(() => {
+        const fetchSettings = async () => {
+            try {
+                const response = await axios.get('/medical-settings');
+                const s = response.data?.data ?? response.data;
+                if (s && s.carb_ratio != null) {
+                    reset({
+                        carb_ratio:        s.carb_ratio,
+                        correction_start:  s.correction_start,
+                        correction_step:   s.correction_step,
+                        correction_units:  s.correction_units,
+                    });
+                }
+            } catch (err) {
+                // 404 = sin configuración aún → formulario vacío, sin error visible
+                if (err.response?.status !== 404) {
+                    setLoadError('No se pudo cargar la configuración actual.');
+                }
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchSettings();
+    }, [reset]);
+
+    /* Guardar configuración */
+    const onSubmit = async (data) => {
+        setServerError('');
+        try {
+            const payload = {
+                carb_ratio:        parseFloat(data.carb_ratio),
+                correction_start:  parseInt(data.correction_start),
+                correction_step:   parseInt(data.correction_step),
+                correction_units:  parseFloat(data.correction_units),
+            };
+            await axios.post('/medical-settings', payload);
+            await refreshMedicalSettings();
+            navigate('/dashboard');
+        } catch (err) {
+            console.error(err);
+            if (err.response?.data?.errors) {
+                const [[primerError] = ['Revisa los datos introducidos']] = Object.values(err.response.data.errors);
+                setServerError(primerError);
+            } else {
+                setServerError('Error al guardar la configuración.');
+            }
+        }
+    };
+
+    /* Cargando */
+    if (isLoading) {
+        return (
+            <div className="min-h-screen bg-surface flex items-center justify-center">
+                <IconSpinner className="w-10 h-10 text-primary" />
+            </div>
+        );
+    }
 
     return (
         <>
@@ -215,7 +230,18 @@ export default function Settings() {
 
                 {/* Area del formulario */}
                 <div className="flex-1 p-6 overflow-y-auto">
-                    <FormContent />
+                    <SettingsForm
+                        register={register}
+                        handleSubmit={handleSubmit}
+                        onSubmit={onSubmit}
+                        errors={errors}
+                        isSubmitting={isSubmitting}
+                        loadError={loadError}
+                        serverError={serverError}
+                        navigate={navigate}
+                        showBackButton={hasMedicalSettings}
+                        isOnboarding={isOnboarding}
+                    />
                 </div>
             </div>
 
@@ -226,7 +252,18 @@ export default function Settings() {
                 <div className="flex-1 flex flex-col bg-surface overflow-y-auto">
                     <div className="flex-1 flex items-center justify-center p-12">
                         <div className="w-full max-w-sm">
-                            <FormContent />
+                            <SettingsForm
+                                register={register}
+                                handleSubmit={handleSubmit}
+                                onSubmit={onSubmit}
+                                errors={errors}
+                                isSubmitting={isSubmitting}
+                                loadError={loadError}
+                                serverError={serverError}
+                                navigate={navigate}
+                                showBackButton={hasMedicalSettings}
+                                isOnboarding={isOnboarding}
+                            />
                         </div>
                     </div>
                 </div>

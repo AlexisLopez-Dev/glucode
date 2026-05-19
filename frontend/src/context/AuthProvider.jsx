@@ -12,7 +12,23 @@ export const AuthProvider = ({ children }) => {
   
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [hasMedicalSettings, setHasMedicalSettings] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+
+  const fetchMedicalSettingsStatus = async () => {
+    try {
+      await axios.get('/medical-settings');
+      setHasMedicalSettings(true);
+      return true;
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setHasMedicalSettings(false);
+        return false;
+      }
+      setHasMedicalSettings(false);
+      return false;
+    }
+  };
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -23,11 +39,13 @@ export const AuthProvider = ({ children }) => {
           const response = await axios.get('/user');
           setUser(response.data);
           setIsAuthenticated(true);
+          await fetchMedicalSettingsStatus();
         } catch (error) {
           console.error("Token inválido o expirado: " + error);
           localStorage.removeItem('auth_token');
           setIsAuthenticated(false);
           setUser(null);
+          setHasMedicalSettings(false);
         }
       }
       setIsLoading(false);
@@ -43,9 +61,11 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get('/user');
       setUser(response.data);
       setIsAuthenticated(true);
+      return await fetchMedicalSettingsStatus();
     } catch (error) {
       console.error("Error al obtener los datos del usuario tras el login: " + error);
       localStorage.removeItem('auth_token');
+      return false;
     }
   };
 
@@ -58,11 +78,20 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('auth_token');
       setUser(null);
       setIsAuthenticated(false);
+      setHasMedicalSettings(false);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated, isLoading, login, logout }}>
+    <AuthContext.Provider value={{
+      user,
+      isAuthenticated,
+      isLoading,
+      hasMedicalSettings,
+      login,
+      logout,
+      refreshMedicalSettings: fetchMedicalSettingsStatus,
+    }}>
       {children}
     </AuthContext.Provider>
   )
