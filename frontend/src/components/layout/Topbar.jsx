@@ -13,7 +13,7 @@ export const Topbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   return (
-    <header className="h-[56px] flex items-center justify-end px-4 md:px-6 border-b shrink-0 md:sticky md:top-0 z-30 bg-surface border-border">
+    <header className="h-[64px] flex items-center justify-end px-4 md:px-6 border-b shrink-0 md:sticky md:top-0 z-30 bg-surface border-border">
       <div className="relative">
         <button
           onClick={() => setIsDropdownOpen(!isDropdownOpen)}
