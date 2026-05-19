@@ -22,7 +22,7 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
             : 'border-border-strong focus:border-primary text-text'}`;
 
     return (
-        <div className="border-y md:border p-5 md:p-6 flex flex-col h-full bg-surface border-border rounded-2xl">
+        <div className="border-y md:border p-5 md:p-6 flex flex-col h-full md:min-h-0 md:overflow-y-auto bg-surface border-border rounded-2xl">
             {/* Cabecera del panel */}
             <div className="flex justify-between items-start mb-5">
                 <div>
@@ -48,7 +48,7 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
                 onSubmit={handleSubmit(onSimulate)}
                 className="space-y-4 flex-1 flex flex-col"
             >
-                <div className="space-y-4 flex-1">
+                <div className="space-y-4">
 
                     {/* Glucosa actual */}
                     <div className={inputBlockClass}>
@@ -116,7 +116,7 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
                 </div>
 
                 {/* Botón de simulación */}
-                <div className="pt-5">
+                <div className="pt-5 md:mt-auto">
                     <button
                         id={`${formId}-submit-btn`}
                         type="submit"

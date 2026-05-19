@@ -67,7 +67,7 @@ export const GlucoseChart = ({ chartData, isSimulating, serverError, compact = f
             </div>
         )}
 
-        <div className={`flex-1 w-full relative ${compact ? 'min-h-[200px]' : 'min-h-[240px] md:min-h-[300px] mt-4'}`}>
+        <div className={`flex-1 w-full relative min-h-0 ${compact ? 'min-h-[200px]' : 'min-h-[240px] md:min-h-0 mt-4'}`}>
 
             {chartData.length === 0 ? (
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center gap-3">
