@@ -36,7 +36,7 @@ export const ParameterPanel = ({ formId = 'parameter-form', onSimulate, isSimula
                 <Link
                     to="/settings"
                     className="flex items-center justify-center rounded-lg transition-all duration-150
-                               text-text-subtle hover:text-primary hover:bg-primary-subtle touch-target"
+                               text-text-strong hover:bg-primary-subtle hover:text-primary touch-target"
                 >
                     <IconSettings className="w-5 h-5" />
                 </Link>
