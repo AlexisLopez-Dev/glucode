@@ -210,6 +210,25 @@ export const IconInsulin = ({ className }) => (
     </svg>
 );
 
+// Cerrar sesión (Arco + flecha de salida)
+export const IconLogout = ({ className }) => (
+    <svg
+        viewBox="0 0 24 24"
+        width="20"
+        height="20"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+        aria-hidden="true"
+    >
+        <path d="M12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4" />
+        <path d="M10 12H20M20 12L17 9M20 12L17 15" />
+    </svg>
+);
+
 // Cerrar / X
 export const IconX = ({ className }) => (
     <svg

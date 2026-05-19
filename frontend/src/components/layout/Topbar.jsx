@@ -1,7 +1,7 @@
 import { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
-import { IconSettings } from '../icons/Icons';
+import { IconLogout, IconSettings } from '../icons/Icons';
 
 /**
  * Topbar — Barra superior de la zona autenticada
@@ -56,6 +56,7 @@ export const Topbar = () => {
                 className="w-full text-left px-4 py-3 text-sm font-bold rounded-xl transition-all duration-150 flex items-center gap-3
                            text-danger-text hover:bg-danger-subtle hover:text-danger-hover-text"
               >
+                <IconLogout className="w-5 h-5 shrink-0" />
                 Cerrar Sesión
               </button>
             </div>
