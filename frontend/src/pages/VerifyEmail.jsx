@@ -2,6 +2,8 @@ import { useState, useContext, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../lib/axios';
 import { AuthContext } from '../context/AuthContext';
+import { IconSimulator, IconWarning } from '../components/icons/Icons';
+import { Logo } from '../components/common/Logo';
 
 /**
  * VerifyEmail — Verificación de cuenta con código de 6 dígitos
@@ -115,76 +117,103 @@ export default function VerifyEmail() {
     : '';
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-surface-elevated p-4">
-      <div className="bg-surface p-8 rounded-xl shadow-lg w-full max-w-md">
+    <div className="min-h-screen flex flex-col md:flex-row">
 
-        <div className="flex justify-center mb-4">
-          <div className="bg-primary-subtle-strong rounded-full p-4">
-            <svg className="w-8 h-8 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25H4.5a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5H4.5a2.25 2.25 0 00-2.25 2.25m19.5 0-9.75 6.75L2.25 6.75" />
-            </svg>
-          </div>
+      {/* Panel izquierdo — zona de marca oscura */}
+      <div
+        className="flex-shrink-0 flex flex-col items-center justify-center
+                   h-16 md:h-auto md:w-[45%] p-6 md:p-14 bg-dark-surface"
+      >
+        <div className="flex items-center gap-2 text-dark-text">
+          <Logo variant="full" theme="dark" size="lg" />
         </div>
 
-        <h2 className="text-2xl font-bold text-center text-text-strong mb-1">Verifica tu cuenta</h2>
-        <p className="text-center text-text-muted text-sm mb-6">
-          Hemos enviado un código de 6 dígitos a<br />
-          <span className="font-medium text-text-secondary">{maskedEmail}</span>
-        </p>
+        <div className="hidden md:flex flex-col items-center mt-12 gap-10">
+          <p className="text-lg font-medium text-center text-dark-text-muted">
+            Descifra tu diabetes
+          </p>
 
-        {serverError && (
-          <div className="bg-danger-subtle border border-danger-border text-danger-text px-4 py-3 rounded mb-4 text-sm">
-            {serverError}
-          </div>
-        )}
-
-        {successMessage && (
-          <div className="bg-success-subtle border border-success-border text-success-text px-4 py-3 rounded mb-4 text-sm">
-            {successMessage}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit}>
-          <div className="flex gap-2 justify-center mb-6" onPaste={handlePaste}>
-            {digits.map((digit, index) => (
-              <input
-                key={index}
-                ref={el => (inputRefs.current[index] = el)}
-                type="text"
-                inputMode="numeric"
-                maxLength={1}
-                value={digit}
-                onChange={e => handleDigitChange(index, e.target.value)}
-                onKeyDown={e => handleKeyDown(index, e)}
-                className={`w-12 h-14 text-center text-xl font-bold border-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-light transition-colors
-                  ${digit ? 'border-primary bg-primary-subtle text-primary-on-subtle' : 'border-border-strong text-text'}
-                  ${serverError ? 'border-danger-border' : ''}`}
-              />
-            ))}
-          </div>
-
-          <button
-            type="submit"
-            disabled={isSubmitting || digits.join('').length < 6}
-            className={`w-full text-on-primary font-bold py-2.5 px-4 rounded-lg transition duration-200
-              ${isSubmitting || digits.join('').length < 6
-                ? 'bg-disabled-soft cursor-not-allowed'
-                : 'bg-primary hover:bg-primary-dark'}`}
+          <div
+            className="w-32 h-32 flex items-center justify-center rounded-2xl bg-dark-surface-alt"
+            style={{ boxShadow: '0 0 32px 4px rgba(37, 99, 235, 0.35)' }}
           >
-            {isSubmitting ? 'Verificando...' : 'Verificar cuenta'}
-          </button>
-        </form>
+            <IconSimulator className="w-20 h-20 text-primary" />
+          </div>
 
-        <div className="mt-5 text-center">
-          <p className="text-sm text-text-muted">
+          <p className="text-sm text-center max-w-xs leading-relaxed text-dark-text-muted">
+            Simula cómo afectan la insulina y los carbohidratos a tu glucosa. Una herramienta educativa para ti y tu familia.
+          </p>
+        </div>
+      </div>
+
+      {/* Panel derecho — formulario */}
+      <div className="flex-1 flex items-center justify-center p-6 md:p-12 bg-surface">
+        <div className="w-full max-w-[420px]">
+
+          <h2 className="text-2xl font-black tracking-tight mb-1 text-text-strong">
+            Verifica tu cuenta
+          </h2>
+          <p className="text-sm mb-8 text-text-muted">
+            Hemos enviado un código de 6 dígitos a{' '}
+            <span className="font-semibold text-text-secondary">{maskedEmail}</span>
+          </p>
+
+          {serverError && (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl mb-6 text-sm font-medium border bg-danger-subtle border-danger-border text-danger-text">
+              <IconWarning className="w-4 h-4 shrink-0" />
+              {serverError}
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="flex items-center gap-2 px-4 py-3 rounded-xl mb-6 text-sm font-medium border bg-success-subtle border-success-border text-success-text">
+              {successMessage}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="flex gap-2 justify-between" onPaste={handlePaste}>
+              {digits.map((digit, index) => (
+                <input
+                  key={index}
+                  ref={el => (inputRefs.current[index] = el)}
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={1}
+                  value={digit}
+                  onChange={e => handleDigitChange(index, e.target.value)}
+                  onKeyDown={e => handleKeyDown(index, e)}
+                  className={`w-full h-14 text-center text-xl font-bold border-2 rounded-md
+                    focus:outline-none focus:ring-2 focus:ring-primary transition-all duration-150
+                    ${serverError
+                      ? 'border-danger-border bg-danger-subtle text-danger-text'
+                      : digit
+                        ? 'border-primary bg-primary-subtle text-primary-on-subtle'
+                        : 'border-border-strong text-text'}`}
+                />
+              ))}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isSubmitting || digits.join('').length < 6}
+              className="w-full min-h-12 font-bold text-base rounded-md transition-all duration-150 active:scale-95
+                         text-on-primary bg-dark-surface hover:bg-dark-surface-alt
+                         disabled:bg-disabled-strong disabled:cursor-not-allowed disabled:hover:bg-disabled-strong"
+            >
+              {isSubmitting ? 'Verificando...' : 'Verificar cuenta'}
+            </button>
+          </form>
+
+          <p className="mt-6 text-sm text-center text-text-muted">
             ¿No has recibido el código?{' '}
             <button
               onClick={handleResend}
               disabled={resendCooldown > 0 || isResending}
-              className={`font-medium transition-colors
+              className={`font-semibold transition-colors
                 ${resendCooldown > 0 || isResending
                   ? 'text-text-subtle cursor-not-allowed'
-                  : 'text-primary hover:text-primary-darker hover:underline'}`}
+                  : 'underline text-primary hover:text-primary-darker'}`}
             >
               {isResending
                 ? 'Enviando...'
@@ -193,9 +222,10 @@ export default function VerifyEmail() {
                   : 'Reenviar código'}
             </button>
           </p>
-        </div>
 
+        </div>
       </div>
+
     </div>
   );
 }
